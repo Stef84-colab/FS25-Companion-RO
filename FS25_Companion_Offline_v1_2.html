@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#173d22">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Companion românesc pentru Farming Simulator 25: animale, hrană, mixuri, culturi, utilaje și pași.">
+  <style>
+
+:root{
+  --bg:#0c1710; --panel:#13231a; --panel2:#182c20; --text:#f4f7f4; --muted:#aab8ae;
+  --line:#2d4233; --accent:#79cf78; --accent2:#d5f273; --warn:#ffd36a; --danger:#ff8b75;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:
+radial-gradient(circle at 100% 0%,#21351f 0,transparent 34rem),var(--bg);color:var(--text)}
+button,input,select{font:inherit}
+button{cursor:pointer}
+#app{max-width:980px;margin:auto;padding:14px 14px 40px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 2px 14px}
+.brand{display:flex;gap:11px;align-items:center;min-width:0}
+.brand-icon{width:48px;height:48px;border-radius:13px}
+h1{font-size:18px;margin:0}.brand p{font-size:12px;color:var(--muted);margin:2px 0 0}
+.install-btn,.primary{border:0;border-radius:12px;background:var(--accent);color:#07120a;font-weight:800;padding:11px 14px;min-height:44px}
+.hero{display:grid;grid-template-columns:1fr auto;gap:14px;padding:22px;background:linear-gradient(135deg,#203b27,#13251a);
+border:1px solid #38503d;border-radius:22px}
+.eyebrow{font-size:11px;letter-spacing:.14em;color:var(--accent2);font-weight:800}
+.hero h2{font-size:28px;line-height:1.05;margin:7px 0 9px}.hero p{color:#c7d1c9;margin:0;max-width:620px}
+.hero-stat{min-width:105px;align-self:center;text-align:center;background:#0f1f15;border:1px solid #35523a;border-radius:18px;padding:14px}
+.hero-stat strong{display:block;font-size:30px;color:var(--accent2)}.hero-stat span{font-size:11px;color:var(--muted)}
+.tabs{display:flex;gap:8px;overflow:auto;padding:14px 0 10px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}.tab{white-space:nowrap;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:13px;padding:11px 13px;min-height:44px}
+.tab.active{background:var(--accent);color:#08140a;border-color:var(--accent);font-weight:800}
+.view{display:none}.view.active{display:block}
+.section-title{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:12px 1px}
+.section-title h3{font-size:22px;margin:0;color:#ffffff}.section-title p{color:#d6ddd7;font-size:13px;margin:4px 0 0}
+input[type=search],select{border:1px solid var(--line);background:#0e1c13;color:var(--text);border-radius:12px;padding:11px 12px;min-height:44px;outline:none}
+input[type=search]{width:min(260px,45vw)}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+.grid{display:grid;gap:12px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:17px;padding:15px;min-width:0;color:var(--text)}
+.card.clickable{transition:transform .12s ease,border-color .12s ease}.card.clickable:active{transform:scale(.985)}
+.card-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.animal-name{display:flex;align-items:center;gap:9px}.animal-emoji{font-size:34px}.card h4{margin:0;font-size:18px;color:#ffffff}.card, .card *{text-shadow:none}
+.muted{color:var(--muted)}.small{font-size:12px}.tag{display:inline-flex;border-radius:999px;border:1px solid var(--line);padding:5px 8px;font-size:11px;color:#d9e4dc}
+.tag.good{background:#19351f;color:#bff5bb}.tag.warn{background:#352e18;color:#ffecad}.tag.hard{background:#38231f;color:#ffcabf}
+.card-desc{color:#eef3ef;font-size:13px;line-height:1.45;margin:12px 0}
+.food-preview{display:flex;flex-wrap:wrap;gap:6px}.food-pill{background:#0d1d13;border:1px solid #304834;border-radius:999px;padding:6px 8px;font-size:11px;color:#ffffff}
+.open-hint{display:block;margin-top:12px;color:#e6ff96;font-size:12px;font-weight:750}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;color:#ffffff}
+.planner{display:grid;gap:12px}.planner label{display:grid;gap:7px;font-size:13px;color:var(--muted)}
+.plan-result:empty{display:none}.plan-result{margin-top:6px;border-top:1px solid var(--line);padding-top:15px}
+.step{display:grid;grid-template-columns:32px 1fr;gap:10px;margin:10px 0;align-items:start}
+.step-num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#24422a;color:var(--accent2);font-weight:900}
+.machine-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}.machine{padding:7px 9px;border:1px solid #38533e;background:#101e15;border-radius:10px;font-size:12px;color:#ffffff}
+.list{display:grid;gap:10px}.crop-row{border:1px solid var(--line);background:var(--panel);border-radius:15px;padding:14px}
+.crop-row h4{margin:0 0 6px;color:#ffffff}.crop-row p{margin:5px 0;color:#eef3ef;font-size:13px;line-height:1.45}
+.quick-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.quick-card{text-align:left;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:14px;min-height:82px}
+.quick-card b,.quick-card span{display:block}.quick-card span{font-size:12px;color:var(--muted);margin-top:5px}.quick-answer{margin-top:12px;line-height:1.55}
+.modal{position:fixed;inset:0;z-index:20;display:grid;place-items:end center}.modal[hidden]{display:none}
+.modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.68)}.modal-card{position:relative;width:min(760px,100%);max-height:88vh;overflow:auto;background:#102017;border:1px solid #38513d;border-radius:22px 22px 0 0;padding:20px 17px 26px}
+.close{position:sticky;top:0;float:right;border:1px solid var(--line);background:#0c1810;color:var(--text);width:42px;height:42px;border-radius:50%;font-size:26px;z-index:2}
+.detail-title{display:flex;gap:12px;align-items:center;padding-right:48px}.detail-title .big{font-size:46px}.detail-title h2{margin:0;color:#ffffff}
+.detail-section{margin-top:18px;color:#ffffff}.detail-section h3{font-size:16px;margin:0 0 9px;color:#ffffff}.food-row{border:1px solid var(--line);border-radius:13px;padding:11px;margin:7px 0;color:#ffffff}
+.food-row-head{display:flex;justify-content:space-between;gap:8px}.bar{height:7px;background:#09140d;border-radius:99px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:var(--accent)}
+.food-card-title{display:flex;gap:10px;align-items:center}.food-card-title span{font-size:30px}
+.food-card-title h4{margin:0;color:#ffffff}.food-card-title p{margin:2px 0 0;font-size:12px;color:#d6ddd7}
+footer{color:#d6ddd7;font-size:12px;line-height:1.5;margin:22px 4px}
+@media(max-width:650px){
+  #app{padding:10px 10px 30px}.hero{grid-template-columns:1fr;padding:18px}.hero-stat{display:none}.hero h2{font-size:25px}
+  .cards,.quick-grid{grid-template-columns:1fr}.section-title{align-items:stretch;flex-direction:column}
+  input[type=search]{width:100%}.brand p{display:none}
+}
+@media(min-width:780px){.cards{grid-template-columns:repeat(3,minmax(0,1fr))}.modal{place-items:center}.modal-card{border-radius:22px;max-height:82vh}}
+
+input::placeholder{color:#d3ddd5;opacity:1}
+
+/* v1.2 - configurator utilaje + navigare */
+.modal-toolbar{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;gap:8px;margin:-8px -4px 8px;padding:6px 4px;background:linear-gradient(#102017 70%,rgba(16,32,23,0))}
+.back-btn,.close{position:static;float:none;border:1px solid var(--line);background:#0c1810;color:#fff;min-width:44px;height:44px;border-radius:12px;font-weight:800}
+.back-btn{padding:0 12px}.close{font-size:25px;width:44px}
+.strategy-grid{display:grid;gap:10px}.strategy-card{width:100%;text-align:left;background:#13251a;border:1px solid #35523a;color:#fff;border-radius:15px;padding:13px;min-height:96px}
+.strategy-card:active{transform:scale(.99)}.strategy-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.strategy-card p{margin:8px 0;color:#eef3ef;line-height:1.45}.strategy-grid.mini .strategy-card{min-height:70px}.strategy-card span.small{display:block;margin-top:5px}
+.setup-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}.setup-summary>div{background:#0d1d13;border:1px solid var(--line);border-radius:13px;padding:10px;text-align:center}.setup-summary span{display:block;font-size:11px;color:#cdd8d0}.setup-summary b{display:block;margin-top:3px;font-size:13px;color:#fff}
+.machine-cards{display:grid;gap:10px}.machine-card{display:grid;grid-template-columns:130px 1fr;gap:12px;width:100%;text-align:left;background:#13251a;border:1px solid #36533d;border-radius:16px;padding:10px;color:#fff;min-width:0}.machine-card:active{transform:scale(.99)}.machine-thumb{display:grid;place-items:center;background:#0b1710;border:1px solid #294333;border-radius:13px;min-height:92px;overflow:hidden}.machine-thumb svg{width:116px;height:auto}.machine-card-body{min-width:0}.machine-card-title{display:flex;gap:8px;align-items:flex-start}.machine-card-title b{display:block;color:#fff}.machine-card-title span:not(.step-mini){display:block;color:#c2d0c6;font-size:11px;margin-top:2px}.machine-card p{margin:7px 0 0;color:#edf3ee;font-size:13px;line-height:1.4}.step-mini{display:grid;place-items:center;flex:0 0 24px;height:24px;border-radius:50%;background:#27452e;color:#e9ff9d;font-weight:900;font-size:12px}.machine-cards.compact .machine-card{grid-template-columns:92px 1fr}.machine-cards.compact .machine-thumb{min-height:72px}.machine-cards.compact .machine-thumb svg{width:84px}
+.art-fill{fill:#8fa89a}.art-fill .art-window,.art-window{fill:#dbe9df}.art-outline{fill:none;stroke:#8fa89a;stroke-width:5;stroke-linecap:round}.art-stroke{fill:none;stroke:#9db2a5;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.machine-hero{text-align:center}.machine-hero-art{max-width:310px;margin:4px auto 10px;background:#0b1710;border:1px solid #294333;border-radius:18px;padding:8px}.machine-hero-art svg{width:100%;max-height:145px}.machine-hero h2{margin:10px 0 5px;color:#fff}.machine-hero p{color:#edf3ee;line-height:1.45;margin:0 auto;max-width:580px}.explain-box,.recommend-box,.tip-box{background:#162a1d;border:1px solid #3a5941;border-radius:14px;padding:13px;line-height:1.55;color:#fff}.recommend-box{border-color:#64783a;background:#202c19}.tip-box{margin-top:15px;background:#1b2817;border-color:#536635}.store-path{margin-top:9px;background:#0d1d13;border:1px solid var(--line);border-radius:12px;padding:10px;color:#fff}
+.type-list{display:grid;gap:8px}.type-list>div{display:grid;grid-template-columns:28px 1fr;gap:9px;align-items:start;border:1px solid var(--line);border-radius:12px;padding:9px;background:#0e1c13}.type-list span{display:grid;place-items:center;width:27px;height:27px;border-radius:50%;background:#27452e;color:#e9ff9d;font-weight:900}.type-list p{margin:3px 0;color:#f4f7f4;line-height:1.4}.proscons{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:15px 0}.proscons>div{border:1px solid var(--line);border-radius:13px;padding:11px;background:#0e1c13}.proscons p{margin:6px 0 0;color:#eef3ef;font-size:13px;line-height:1.4}
+@media(max-width:560px){.machine-card{grid-template-columns:100px 1fr}.machine-thumb svg{width:92px}.setup-summary{grid-template-columns:1fr 1fr 1fr}.proscons{grid-template-columns:1fr}.modal-card{padding-top:10px}}
+@media(max-width:380px){.machine-card{grid-template-columns:1fr}.machine-thumb{min-height:88px}.machine-thumb svg{width:120px}.setup-summary{grid-template-columns:1fr}.strategy-head{align-items:flex-start}}
+
+</style>
+  <title>FS25 Companion RO</title>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon" style="display:grid;place-items:center;background:#173d22;font-size:28px">🚜</div>
+      <div>
+        <h1>FS25 Companion RO</h1>
+        <p>De la „ce mănâncă?” până la „ce utilaj îmi trebuie?”</p>
+      </div>
+    </div>
+    <button id="installBtn" class="install-btn" hidden>⬇ Instalează</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <span class="eyebrow">GHID RAPID + PLANIFICATOR</span>
+        <h2>Ce vrei să faci în fermă?</h2>
+        <p>Alege o categorie. Aplicația îți leagă animalul de hrană, cultura necesară și utilajele de care ai nevoie.</p>
+      </div>
+      <div class="hero-stat">
+        <strong id="animalCount">8</strong>
+        <span>tipuri de animale</span>
+      </div>
+    </section>
+
+    <nav class="tabs" aria-label="Navigare">
+      <button class="tab active" data-view="animals">🐄 Animale</button>
+      <button class="tab" data-view="food">🥣 Hrană</button>
+      <button class="tab" data-view="planner">🧭 Planificator</button>
+      <button class="tab" data-view="crops">🌾 Culturi</button>
+      <button class="tab" data-view="quick">⚡ Rapid</button>
+    </nav>
+
+    <section id="animalsView" class="view active">
+      <div class="section-title">
+        <div><h3>Animale</h3><p>Apasă pe animal pentru hrană, productivitate și recomandare.</p></div>
+        <input id="animalSearch" type="search" placeholder="Caută animal..." aria-label="Caută animal">
+      </div>
+      <div id="animalGrid" class="grid cards"></div>
+    </section>
+
+    <section id="foodView" class="view">
+      <div class="section-title">
+        <div><h3>Hrană & mixuri</h3><p>Vezi exact cum o produci și ce utilaje îți trebuie.</p></div>
+      </div>
+      <div id="foodGrid" class="grid cards"></div>
+    </section>
+
+    <section id="plannerView" class="view">
+      <div class="section-title">
+        <div><h3>Planificator hrană</h3><p>Alege animalul și strategia; îți dau fluxul complet.</p></div>
+      </div>
+      <div class="panel planner">
+        <label>Animal
+          <select id="plannerAnimal"></select>
+        </label>
+        <label>Strategie
+          <select id="plannerStrategy">
+            <option value="best">Maximă productivitate</option>
+            <option value="starter">Simplu pentru început</option>
+          </select>
+        </label>
+        <button id="buildPlan" class="primary">Construiește planul</button>
+        <div id="planResult" class="plan-result"></div>
+      </div>
+    </section>
+
+    <section id="cropsView" class="view">
+      <div class="section-title">
+        <div><h3>Culturi utile pentru animale</h3><p>Ce obții și la ce îți folosește.</p></div>
+        <input id="cropSearch" type="search" placeholder="Caută cultură..." aria-label="Caută cultură">
+      </div>
+      <div id="cropList" class="list"></div>
+    </section>
+
+    <section id="quickView" class="view">
+      <div class="section-title"><div><h3>Ajutor rapid</h3><p>Răspunsuri la blocajele cele mai comune.</p></div></div>
+      <div class="quick-grid">
+        <button class="quick-card" data-q="straw"><b>🟨 Am paie pe câmp</b><span>Cum le adun?</span></button>
+        <button class="quick-card" data-q="lime"><b>⚪ Terenul cere var</b><span>În ce ordine?</span></button>
+        <button class="quick-card" data-q="chicken"><b>🐔 Nu pot hrăni găinile</b><span>Ce verific?</span></button>
+        <button class="quick-card" data-q="hay"><b>🌾 Vreau fân</b><span>Ce utilaje cumpăr?</span></button>
+        <button class="quick-card" data-q="silage"><b>🟩 Vreau siloz</b><span>Cea mai simplă metodă</span></button>
+        <button class="quick-card" data-q="field"><b>🌱 După recoltare</b><span>Ce fac cu terenul?</span></button>
+      </div>
+      <div id="quickAnswer" class="panel quick-answer">Alege o situație de mai sus.</div>
+    </section>
+  </main>
+
+  <div id="modal" class="modal" hidden>
+    <div class="modal-backdrop" data-close="1"></div>
+    <article class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-toolbar"><button class="back-btn" id="modalBack" type="button">← Înapoi</button><button class="close" id="modalClose" type="button" aria-label="Înapoi">×</button></div>
+      <div id="modalContent"></div>
+    </article>
+  </div>
+
+  <footer>
+    <p><b>Notă:</b> Profitul depinde de hartă, dificultate, prețuri și economie. Etichetele din aplicație sunt orientative pentru complexitate/eficiență, nu sume fixe.</p>
+    <p class="small">Bază: mecanici FS25 + Academia Farming Simulator. Versiune 1.2 · configurator utilaje.</p>
+  </footer>
+</div>
+
+<script>
+window.FS25_DATA = {"animals":[{"id":"cows","name":"Vaci","emoji":"🐄","difficulty":"Mediu–Ridicat","profit":"Ridicat","products":"Lapte, animale; în funcție de adăpost și setup: gunoi de grajd / dejecții","foods":[{"name":"Iarbă","prod":"~40%","score":40,"why":"Foarte simplă și ieftină, dar productivitate mică."},{"name":"Fân","prod":"~80%","score":80,"why":"Foarte bun la început; simplu de stocat în baloți."},{"name":"Siloz","prod":"~80%","score":80,"why":"Bun dacă ai deja linie de iarbă/porumb și vrei volum mare."},{"name":"TMR","prod":"100%","score":100,"why":"Cea mai bună hrană pentru producția maximă de lapte."}],"best":"TMR","starter":"Fân","notes":"Dacă vrei lapte serios, treci la TMR. Pentru început, fânul este mult mai simplu."},{"id":"buffalo","name":"Bivoli de apă","emoji":"🐃","difficulty":"Mediu–Ridicat","profit":"Ridicat","products":"Lapte de bivoliță, animale; posibil gunoi/dejecții în funcție de adăpost","foods":[{"name":"Iarbă","prod":"~40%","score":40,"why":"Foarte simplă, productivitate redusă."},{"name":"Fân","prod":"~80%","score":80,"why":"Simplu și eficient."},{"name":"Siloz","prod":"~80%","score":80,"why":"Bun pentru ferme mai dezvoltate."},{"name":"TMR","prod":"100%","score":100,"why":"Maximizează productivitatea."}],"best":"TMR","starter":"Fân","notes":"Flux foarte asemănător cu vacile."},{"id":"pigs","name":"Porci","emoji":"🐖","difficulty":"Ridicat","profit":"Mediu–Ridicat","products":"Animale pentru vânzare; gunoi de grajd / dejecții în funcție de setup","foods":[{"name":"Bază 50%","prod":"50% din rație","score":50,"why":"Porumb sau sorg."},{"name":"Cereale 25%","prod":"25% din rație","score":25,"why":"Grâu sau orz."},{"name":"Proteine 20%","prod":"20% din rație","score":20,"why":"Canola, floarea-soarelui sau soia."},{"name":"Rădăcinoase 5%","prod":"5% din rație","score":5,"why":"Cartofi sau sfeclă de zahăr."}],"best":"Rație completă 50/25/20/5","starter":"Hrană pentru porci cumpărată","notes":"Cei mai complicați la hrană. La început e adesea mai comod să cumperi pig food."},{"id":"sheep","name":"Oi","emoji":"🐑","difficulty":"Ușor","profit":"Bun","products":"Lână, animale","foods":[{"name":"Iarbă","prod":"100%","score":100,"why":"Cea mai ieftină și simplă."},{"name":"Fân","prod":"100%","score":100,"why":"La fel de productiv ca iarba și se stochează ușor."}],"best":"Iarbă / Fân","starter":"Iarbă","notes":"Una dintre cele mai bune alegeri pentru începători."},{"id":"goats","name":"Capre","emoji":"🐐","difficulty":"Ușor","profit":"Bun–Ridicat","products":"Lapte de capră, animale","foods":[{"name":"Iarbă","prod":"100%","score":100,"why":"Simplu și ieftin."},{"name":"Fân","prod":"100%","score":100,"why":"100% productivitate și ușor de stocat."}],"best":"Iarbă / Fân","starter":"Iarbă","notes":"Foarte simple la hrană, iar laptele poate intra în producții."},{"id":"chickens","name":"Găini","emoji":"🐔","difficulty":"Foarte ușor","profit":"Bun","products":"Ouă, animale","foods":[{"name":"Grâu","prod":"Hrană completă","score":100,"why":"Foarte bun dacă îl cultivi deja."},{"name":"Orz","prod":"Hrană completă","score":100,"why":"Alternativă simplă."},{"name":"Sorg","prod":"Hrană completă","score":100,"why":"Alternativă bună pentru hrană."},{"name":"Chicken feed / BigBag","prod":"Hrană completă","score":100,"why":"Cumperi direct, dar costă mai mult."}],"best":"Cereale cultivate de tine","starter":"Grâu","notes":"Excelente pentru început: puține utilaje speciale și ouăle se vând."},{"id":"horses","name":"Cai","emoji":"🐎","difficulty":"Mediu","profit":"Specializat","products":"Valoare crescută prin îngrijire/antrenament și vânzare","foods":[{"name":"Fân","prod":"Necesar","score":80,"why":"Se produce din iarbă uscată."},{"name":"Ovăz","prod":"Necesar","score":90,"why":"Cultură dedicată foarte potrivită pentru cai."}],"best":"Fân + ovăz","starter":"Fân + ovăz","notes":"Profitul depinde mult de antrenare/îngrijire, nu doar de hrană."},{"id":"bees","name":"Albine","emoji":"🐝","difficulty":"Foarte ușor","profit":"Pasiv","products":"Miere","foods":[{"name":"Nu necesită hrană manuală","prod":"Pasiv","score":100,"why":"Plasezi stupii și gestionezi paleții de miere."}],"best":"Fără hrană","starter":"Stupi","notes":"Cea mai pasivă ramură de animale."}],"foods":[{"id":"grass","name":"Iarbă","emoji":"🌱","profit":"Foarte ieftină","complexity":"Foarte mică","usedBy":"Oi, capre, vaci, bivoli","steps":["Cumpără/deține un teren cu iarbă","Cosește iarba","O poți duce vrac cu remorcă de furaje sau o poți balota","Descarcă/bagă balotul la punctul de hrană"],"machines":["Tractor","Cositoare","Opțional: windrower","Remorcă de furaje SAU presă de balotat"],"tip":"Pentru oi și capre, iarba este una dintre cele mai ieftine căi spre productivitate maximă."},{"id":"hay","name":"Fân","emoji":"🌾","profit":"Foarte bun","complexity":"Mică","usedBy":"Oi, capre, vaci, bivoli, cai","steps":["Cosește iarba","Treci cu tedder-ul ca să transformi iarba în fân","Opțional: strânge în brazdă cu windrower","Adună cu remorcă de furaje sau balotează","Depozitează / hrănește animalele"],"machines":["Tractor","Cositoare","Tedder / întorcător","Opțional: windrower","Remorcă de furaje SAU presă de balotat"],"tip":"Fânul e excelent ca hrană de început pentru bovine și rămâne 100% pentru oi/capre."},{"id":"straw","name":"Paie","emoji":"🟨","profit":"Resursă secundară","complexity":"Mică","usedBy":"TMR, așternut / gunoi de grajd în anumite adăposturi","steps":["Cultivă grâu, orz sau ovăz","La recoltare activează opțiunea de a lăsa paie (straw swath)","Adună paiele direct cu presa sau cu remorcă de furaje","Depozitează pentru TMR/așternut"],"machines":["Tractor","Semănătoare","Combină + header potrivit","Presă de balotat SAU remorcă de furaje"],"tip":"Paiele sunt un bonus foarte bun când oricum cultivi cereale."},{"id":"silage","name":"Siloz","emoji":"🟩","profit":"Foarte bun","complexity":"Mediu","usedBy":"Vaci, bivoli, TMR; silozul poate fi și vândut","steps":["Varianta simplă: cosește iarba","Balotează iarba cu o presă compatibilă","Înfoliază baloții de iarbă","Așteaptă fermentarea","Alternativ: pune iarbă/tocătură într-un bunker, compactează și acoperă"],"machines":["Tractor","Cositoare","Presă de balotat","Înfoliator SAU presă+înfoliator combinat","Alternativ bunker silo + utilaj de compactare"],"tip":"Pentru o fermă mică, baloții înfoliați sunt de obicei mai ușor de gestionat decât bunker-ul."},{"id":"tmr","name":"TMR (rație totală mixtă)","emoji":"🥣","profit":"Maxim pentru lapte","complexity":"Ridicată","usedBy":"Vaci și bivoli","steps":["Pregătește fân","Pregătește siloz","Pregătește paie","Ia mineral feed dacă rețeta/setup-ul îl cere","Încarcă ingredientele într-o remorcă mixer","Urmărește indicatorul mixerului până când amestecul este TMR","Descarcă în hrănitorul bovinelor"],"machines":["Tractor","Remorcă mixer / forage mixer wagon","Încărcător frontal/telehandler","Furcă de baloți","Linia de utilaje pentru fân","Linia de utilaje pentru siloz"],"tip":"Este varianta cu cea mai mare productivitate la lapte. Nu arunca ingredientele la întâmplare: urmărește bara/rețeta mixerului."},{"id":"pigmix","name":"Rație completă pentru porci","emoji":"🐷","profit":"Optimă pentru porci","complexity":"Foarte ridicată","usedBy":"Porci","steps":["Asigură baza: porumb sau sorg (50%)","Asigură cereale: grâu sau orz (25%)","Asigură proteine: canola/floarea-soarelui/soia (20%)","Asigură rădăcinoase: cartofi sau sfeclă de zahăr (5%)","Livrează categoriile în hrănitor sau folosește pig food cumpărat"],"machines":["Tractor","Semănători/planter potrivite culturilor","Combină + headere","Pentru cartofi/sfeclă: utilaje dedicate","Remorci pentru transport"],"tip":"La început, pig food cumpărat poate fi mai simplu. Producția proprie devine interesantă când ai deja mai multe culturi."},{"id":"grain","name":"Cereale pentru găini","emoji":"🌾","profit":"Foarte bun","complexity":"Mică","usedBy":"Găini","steps":["Alege grâu, orz sau sorg","Pregătește terenul","Seamănă în perioada corectă","Fertilizează / gestionează buruieni","Recoltează","Păstrează o parte în loc să vinzi tot","Descarcă la punctul de hrană al cotețului"],"machines":["Tractor","Cultivator sau semănătoare directă","Semănătoare","Fertilizator","Combină + header","Remorcă"],"tip":"Grâul/orzul sunt foarte practice deoarece poți obține și paie pentru alte animale."}],"crops":[{"name":"Grâu","uses":"Găini, porci (cereale), paie","flow":"Pregătire sol → semănat → fertilizare → recoltat cu combină → cereale + opțional paie"},{"name":"Orz","uses":"Găini, porci (cereale), paie","flow":"Pregătire sol → semănat → fertilizare → recoltat cu combină → cereale + opțional paie"},{"name":"Ovăz","uses":"Cai, paie","flow":"Pregătire sol → semănat → fertilizare → recoltat → ovăz + paie"},{"name":"Sorg","uses":"Găini, porci (bază)","flow":"Pregătire sol → semănat → fertilizare → recoltat"},{"name":"Porumb","uses":"Porci (bază), tocătură/siloz","flow":"Plantare → îngrijire → combină cu corn header SAU forage harvester pentru tocătură"},{"name":"Soia","uses":"Porci (proteine), vânzare","flow":"Semănat → fertilizat → recoltat cu combină"},{"name":"Canola","uses":"Porci (proteine), ulei/producții","flow":"Semănat → fertilizat → recoltat cu combină"},{"name":"Floarea-soarelui","uses":"Porci (proteine), ulei","flow":"Semănat → fertilizat → recoltat cu header compatibil"},{"name":"Cartofi","uses":"Porci (rădăcinoase)","flow":"Plantator dedicat → îngrijire → recoltator dedicat"},{"name":"Sfeclă de zahăr","uses":"Porci (rădăcinoase), producții","flow":"Semănat/plantat cu utilaj compatibil → îngrijire → recoltare dedicată"},{"name":"Iarbă","uses":"Oi, capre, vaci, bivoli, fân, siloz","flow":"Semănat o dată → cosit repetat → iarbă / tedder pentru fân / fermentare pentru siloz"}]};
+</script>
+<script>
+(() => {
+  const D = window.FS25_DATA;
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
+  const animalGrid = $("#animalGrid"), foodGrid = $("#foodGrid"), cropList = $("#cropList");
+  $("#animalCount").textContent = D.animals.length;
+
+  const diffClass = d => /ridicat/i.test(d) ? "hard" : /mediu/i.test(d) ? "warn" : "good";
+
+  const MACHINES = {
+    tractor:{name:"Tractor",icon:"🚜",shape:"tractor",category:"Tractoare",cost:"€–€€€",base:true,
+      short:"Motorul fermei: trage utilajele și le dă putere prin PTO/hidraulică.",
+      does:"Îl folosești la cosit, întors, greblat, balotat, remorci, mixer TMR și multe alte lucrări. Cel mai important este să aibă suficienți CP pentru utilajul ales.",
+      recognize:"Are cabină, roți mari și cuplă în spate; multe modele au și prindere frontală.",
+      types:["Mic / 80–130 CP – ieftin și bun pentru utilaje ușoare","Mediu / 140–220 CP – cel mai versatil","Puternic / 230+ CP – pentru utilaje late și grele"],
+      buy:"Înainte să cumperi orice utilaj, uită-te la «Required power / Putere necesară». Tractorul trebuie să fie peste acea valoare.",
+      pro:"Un tractor mediu bun poate rămâne util foarte mult timp.",con:"Un tractor prea mic merge încet sau nu ridică utilajul."},
+    mower:{name:"Cositoare",icon:"🌿",shape:"mower",category:"Cositoare",cost:"€–€€",base:true,
+      short:"Taie iarba. Este primul utilaj din orice linie de iarbă, fân sau siloz din iarbă.",
+      does:"Lasă iarba tăiată pe sol. Pentru fân trebuie apoi să treci obligatoriu cu întorcătorul (tedder). Pentru siloz poți balota iarba direct.",
+      recognize:"Utilaj lat și foarte jos, cu bară/discuri de tăiere; poate fi montat în față, în spate sau în set tip «fluture».",
+      types:["Spate simplă – cea mai ieftină","Frontală – bună în combinație cu una în spate","Set față + spate / butterfly – lățime mare, foarte productiv"],
+      buy:"Pentru început ia una simplă. Când ai câmpuri mari, setul față+spate îți taie timpul de lucru aproape la jumătate față de o cositoare îngustă.",
+      pro:"Simplă, ieftină și folosită la mai multe fluxuri.",con:"Doar taie; nu transformă iarba în fân."},
+    tedder:{name:"Întorcător / Tedder",icon:"☀️",shape:"tedder",category:"Întorcătoare",cost:"€",base:true,
+      short:"Transformă iarba tăiată în fân. Pentru fân este utilajul esențial.",
+      does:"Împrăștie și întoarce iarba. După trecerea cu tedder-ul, materialul devine fân și poate fi adunat sau balotat.",
+      recognize:"Are mai multe rotoare rotunde cu brațe subțiri, ca niște «stele» care se învârt.",
+      types:["Mic – ieftin, bun pentru parcele mici","Mediu – compromis bun","Lat – mai multe rotoare, acoperă mult teren la o trecere"],
+      buy:"Nu cumpăra tedder dacă vrei doar siloz din iarbă. Îți trebuie în special pentru fân.",
+      pro:"Cost relativ mic și face exact pasul care diferențiază fânul de iarbă.",con:"Este o trecere suplimentară pe câmp."},
+    windrower:{name:"Windrower / Greblă de adunat",icon:"🌀",shape:"windrower",category:"Windrowers",cost:"€–€€",base:true,
+      short:"Adună iarba, fânul sau paiele într-o brazdă îngustă ca presa/remorca să lucreze mai repede.",
+      does:"Nu produce fân și nu face baloți. Doar mută materialul de pe o zonă lată într-un rând curat.",
+      recognize:"Unul sau două rotoare mari cu multe brațe/greble. De obicei este mai lat decât tractorul.",
+      types:["Un rotor – simplu și ieftin","Două rotoare – adună mai lat","Foarte lat – pentru ferme mari"],
+      buy:"Este opțional la început. Devine foarte util când presa are pickup îngust și pierzi timp urmărind materialul împrăștiat.",
+      pro:"Crește mult viteza reală a balotării.",con:"Nu schimbă produsul; este doar un pas de eficiență."},
+    forage_wagon:{name:"Remorcă autoîncărcătoare de furaje",icon:"🚛",shape:"wagon",category:"Forage Wagons",cost:"€€",base:true,
+      short:"Ridică de pe sol iarbă, fân sau paie și le transportă vrac.",
+      does:"Treci direct peste brazdă, pickup-ul din față ridică materialul și îl pune în remorcă. Poate elimina complet nevoia de presă dacă nu vrei baloți.",
+      recognize:"Remorcă înaltă cu pickup mic în partea de jos, în față.",
+      types:["Mică – volum redus, preț mai bun","Medie – bun compromis","Mare – pentru câmpuri și efective mari"],
+      buy:"Excelentă pentru varianta ieftină de fân/iarbă: cositoare + tedder + remorcă autoîncărcătoare.",
+      pro:"Eviți presa, stivuitorul și manipularea baloților.",con:"Materialul rămâne vrac și trebuie să ai unde să-l descarci/depozitezi."},
+    baler_round:{name:"Presă de balotat rotundă",icon:"🟤",shape:"baler",category:"Balers",cost:"€–€€",base:true,
+      short:"Transformă fânul, paiele sau iarba în baloți rotunzi.",
+      does:"Ridică materialul cu pickup-ul și formează un balot compact. La iarbă, balotul poate fi înfoliat pentru siloz dacă mărimea este compatibilă cu înfoliatorul.",
+      recognize:"Carcasă scurtă și rotunjită, cu pickup jos în față.",
+      types:["Rotundă simplă – de obicei cea mai ieftină","Rotundă cu dimensiune reglabilă","Rotundă + înfoliator integrat – două operații într-un utilaj"],
+      buy:"Foarte bună pentru ferme mici și medii. Verifică diametrul balotului dacă vrei să-l înfoliezi.",
+      pro:"Investiție mai mică și baloți ușor de folosit la animale.",con:"Unele modele te obligă să încetinești/oprești când descarcă balotul."},
+    baler_square:{name:"Presă de balotat pătrată",icon:"🧱",shape:"squarebaler",category:"Balers",cost:"€€€",base:true,
+      short:"Face baloți dreptunghiulari și este orientată spre productivitate mare.",
+      does:"Poate lucra continuu mai bine decât multe prese rotunde; este foarte bună pe suprafețe mari și când ai mult fân sau paie.",
+      recognize:"Utilaj lung, tip cutie, cu pickup în față și canal drept în spate.",
+      types:["Baloți medii","Baloți mari / capacitate ridicată","Seturi cu colector de baloți pentru logistică rapidă"],
+      buy:"Cumpără doar când volumul justifică prețul. Pentru 1–2 câmpuri mici, rotunda este mai rentabilă.",
+      pro:"Flux rapid și baloți ușor de stivuit.",con:"Preț și cerință de putere mai mari."},
+    wrapper:{name:"Înfoliator de baloți",icon:"🎁",shape:"wrapper",category:"Bale Wrappers",cost:"€–€€",base:true,
+      short:"Învelește baloții de iarbă pentru ca ei să fermenteze și să devină siloz.",
+      does:"Primește balotul compatibil și îl acoperă cu folie. După fermentare ai siloz în balot.",
+      recognize:"Cadru cu role/masă și braț de folie; unele sunt tractate, altele ridică balotul singure.",
+      types:["Separat – mai ieftin","Rapid / automatizat","Integrat în presă – balotează + înfoliază"],
+      buy:"Dacă faci mult siloz din baloți, merită direct presa+înfoliator combinată.",
+      pro:"Metodă simplă de siloz fără bunker.",con:"Încă o operație dacă presa nu are înfoliator integrat."},
+    baler_wrapper:{name:"Presă + înfoliator combinat",icon:"🟢",shape:"combobaler",category:"Balers",cost:"€€€",base:true,
+      short:"Face două lucruri: balotează iarba și înfoliază balotul pentru siloz.",
+      does:"Într-o singură trecere faci balotul și îl pregătești pentru fermentare. Este una dintre cele mai bune economii de timp pentru siloz din iarbă.",
+      recognize:"Arată ca o presă mai lungă, cu o a doua zonă/masă de înfoliere în spate.",
+      types:["Rotundă + wrapper integrat","Modele cu automatizare mai rapidă","Variante ModHub cu funcții suplimentare"],
+      buy:"Dacă faci regulat siloz din iarbă, plătești mai mult la început dar elimini un utilaj și o trecere.",
+      pro:"Două operații odată.",con:"Mai scumpă și nu ai nevoie de funcția de înfoliere când faci fân/paie."},
+    combo_baler_windrower_mod:{name:"Presă cu windrower integrat (ModHub)",icon:"⚙️",shape:"combo",category:"ModHub / Balers",cost:"€€–€€€",base:false,
+      short:"Un mod de productivitate: adună brazda mai lat și balotează în aceeași trecere.",
+      does:"Înlocuiește windrower-ul separat + presa în multe situații. Unele pachete includ și versiuni cu înfoliere pentru siloz.",
+      recognize:"Presă normală cu un pickup/greblă foarte lată montată în față sau ca extensie.",
+      types:["Windrower + presă rotundă","Windrower + presă pătrată","Windrower + presă + wrapper – în funcție de mod"],
+      buy:"Ideal dacă accepți moduri și vrei să reduci numărul de treceri. Verifică în descrierea modului ce culturi și dimensiuni de balot suportă.",
+      pro:"Poate înlocui 2–3 utilaje/operații.",con:"Este mod; comportamentul diferă de la un pachet la altul."},
+    frontloader:{name:"Încărcător frontal + furcă de baloți",icon:"🔱",shape:"loader",category:"Front Loaders",cost:"€",base:true,
+      short:"Varianta ieftină pentru mutat baloți și încărcat mixerul TMR.",
+      does:"Montezi brațele pe un tractor compatibil și alegi furcă de baloți, cupă sau alt accesoriu.",
+      recognize:"Două brațe hidraulice prinse de tractor și un accesoriu în față.",
+      types:["Brațe + furcă baloți","Brațe + cupă","Brațe + clește / accesorii diferite"],
+      buy:"Dacă ai deja tractor compatibil, este mult mai ieftin decât un telehandler dedicat.",
+      pro:"Foarte bun raport preț/utilitate.",con:"Mai lent și mai puțin manevrabil decât un telehandler."},
+    telehandler:{name:"Telehandler / Încărcător telescopic",icon:"🏗️",shape:"telehandler",category:"Telehandlers",cost:"€€€",base:true,
+      short:"Utilaj dedicat pentru baloți, paleți și încărcarea rapidă a mixerului.",
+      does:"Brațul telescopic ajunge mai sus și mai departe decât un încărcător frontal. Este mult mai comod într-o fermă mare.",
+      recognize:"Vehicul compact cu braț lung telescopic pe lateral/centru și roți mari.",
+      types:["Compact","Mediu","Ridicare mare / capacitate mare"],
+      buy:"Nu este necesar la început. Devine o achiziție excelentă când manipulezi zeci de baloți/paleți.",
+      pro:"Rapid, manevrabil și foarte versatil.",con:"Costă mult pentru o fermă mică."},
+    mixer_small:{name:"Remorcă mixer TMR mică",icon:"🥣",shape:"mixer",category:"Mixer Wagons",cost:"€€",base:true,
+      short:"Amestecă fân + siloz + paie în proporțiile corecte și produce TMR.",
+      does:"Încarci ingredientele, urmărești bara de amestec și descarci TMR direct la vaci/bivoli.",
+      recognize:"Remorcă înaltă cu cuvă verticală/orizontală și melci de amestec în interior.",
+      types:["Mică – bună pentru efectiv mic","Medie – mai puține drumuri","Autopropulsată / mare – orientată spre ferme mari, dacă este disponibilă"],
+      buy:"Este cea mai ieftină cale către TMR dacă ai deja ingredientele și un mod de a încărca baloții.",
+      pro:"Acces ieftin la 100% hrană pentru bovine.",con:"Trebuie încărcată manual și ai grijă la proporții."},
+    mixer_large:{name:"Remorcă mixer TMR mare",icon:"🥣",shape:"mixer",category:"Mixer Wagons",cost:"€€€",base:true,
+      short:"Aceeași funcție ca mixerul mic, dar cu volum mai mare și mai puține drumuri.",
+      does:"Primește cantități mai mari de ingrediente și este potrivită pentru efective mari de vaci/bivoli.",
+      recognize:"Cuvă de amestec foarte mare pe 2–3 axe, de obicei cere tractor mai puternic.",
+      types:["Tractată mare","Mai multe axe / volum mare","Autopropulsată, dacă este disponibilă în setup-ul tău"],
+      buy:"Ia-o când mixerul mic te obligă la prea multe încărcări pe zi/lună.",
+      pro:"Mult mai eficientă la efective mari.",con:"Preț mare și cere spațiu/putere."},
+    tmr_factory:{name:"Fabrică / Stație TMR",icon:"🏭",shape:"factory",category:"Placeables / ModHub",cost:"€€€",base:false,
+      short:"Producție fixă: bagi ingredientele în clădire și scoți TMR fără să amesteci fiecare încărcătură cu remorca mixer.",
+      does:"În funcție de mod, primește fân, siloz, paie și alte ingrediente, rulează o rețetă și stochează TMR produs.",
+      recognize:"Clădire/stație cu zone de descărcare și silozuri/buncăre; nu este un vehicul.",
+      types:["Stație mică de amestec","Fabrică cu capacitate mare","Producție cu mai multe rețete – depinde de mod"],
+      buy:"Bună când vrei automatizare și volum mare. Verifică rețeta exactă a modului înainte de cumpărare.",
+      pro:"Produce în fundal și scade munca manuală.",con:"Este de regulă ModHub/mod și necesită investiție + spațiu."},
+    feeding_robot:{name:"Grajd cu robot de hrănire",icon:"🤖",shape:"robot",category:"Cow Barns / Buildings",cost:"€€€€",base:true,
+      short:"Cea mai automată variantă: depozitezi ingredientele, iar robotul prepară și distribuie rația.",
+      does:"Grajdul are zone pentru ingrediente; robotul le ia, pregătește TMR și îl livrează automat animalelor.",
+      recognize:"Grajd mare cu zonă separată de ingrediente și un mic vehicul/robot de hrănire.",
+      types:["Grajd standard – hrănire manuală","Grajd cu robot – automatizare mare"],
+      buy:"Merită când ai multe vaci și vrei confort, nu când abia începi cu un efectiv mic.",
+      pro:"Foarte puțină muncă zilnică după ce umpli depozitele.",con:"Investiție inițială foarte mare."},
+    combine:{name:"Combină + header",icon:"🌾",shape:"combine",category:"Harvesters",cost:"€€€",base:true,
+      short:"Recoltează cerealele; la grâu/orz/ovăz poate lăsa paiele pe câmp.",
+      does:"Taie cultura cu header-ul și separă boabele. Activează «straw swath» dacă vrei paie.",
+      recognize:"Vehicul mare, lat, cu buncăr și header în față.",
+      types:["Combină mică + header îngust","Medie","Mare + header foarte lat"],
+      buy:"Pentru început poți închiria dacă recoltezi rar; devine rentabilă când ai multe câmpuri.",
+      pro:"Necesară pentru cereale și sursă de paie.",con:"Una dintre cele mai scumpe categorii."},
+    seeder:{name:"Semănătoare",icon:"🌱",shape:"seeder",category:"Seeders",cost:"€–€€€",base:true,
+      short:"Pune semințele în sol. Unele modele fac și cultivarea și/sau fertilizarea în aceeași trecere.",
+      does:"Semănătoarele directe pot elimina cultivatorul; cele cu fertilizare pot elimina încă o trecere.",
+      recognize:"Buncăr de semințe deasupra și multe brăzdare/discuri în spate.",
+      types:["Simplă – cere sol pregătit","Direct drill – cultivă + seamănă","Semănătoare cu fertilizare – poate face 2–3 operații"],
+      buy:"Dacă vrei productivitate, caută explicit în descriere «direct drilling» și fertilizare.",
+      pro:"Modelele combo economisesc enorm de mult timp.",con:"Cele complexe sunt mai scumpe și cer tractor mai puternic."},
+    trailer:{name:"Remorcă de transport",icon:"🚚",shape:"trailer",category:"Trailers",cost:"€–€€",base:true,
+      short:"Transportă cereale, tocătură și alte materiale vrac.",
+      does:"Primește recolta de la combină/forage harvester și o duce la siloz, animale sau punct de vânzare.",
+      recognize:"Benă deschisă pe una sau mai multe axe.",
+      types:["Mică","Medie","Mare / semiremorcă"],
+      buy:"Volumul trebuie ales după mărimea câmpului și puterea tractorului.",
+      pro:"Utilă în aproape orice fermă.",con:"Una prea mare poate fi greu de tras și manevrat."},
+    forage_harvester:{name:"Forage Harvester / Tocător",icon:"🌽",shape:"forageharvester",category:"Forage Harvesters",cost:"€€€€",base:true,
+      short:"Transformă porumbul sau iarba potrivită în tocătură (chaff) pentru siloz de volum mare.",
+      does:"Taie și toacă materialul, apoi îl aruncă într-o remorcă care merge lângă el sau este atașată, în funcție de setup.",
+      recognize:"Mașină mare, asemănătoare combinei, cu gura de evacuare înaltă curbată.",
+      types:["Cu header de porumb","Cu pickup pentru material în brazdă","Capacitate/putere diferită"],
+      buy:"Este pentru ferme mari. La început baloții înfoliați sunt mult mai ieftini.",
+      pro:"Cea mai bună cale pentru cantități enorme de siloz.",con:"Foarte scump și necesită logistică bună."},
+    bunker_silo:{name:"Bunker silo",icon:"🧱",shape:"bunker",category:"Buildings / Silos",cost:"€€",base:true,
+      short:"Depozit în care pui tocătura/iarba, compactezi și acoperi pentru a produce siloz.",
+      does:"Umpli bunkerul, compactezi materialul până la 100%, îl acoperi și aștepți fermentarea.",
+      recognize:"Două ziduri lungi de beton cu spațiu deschis între ele.",
+      types:["Mic","Mediu","Mare / mai multe compartimente"],
+      buy:"Pentru volum mare costă mai puțin pe litru decât baloții, dar cere mai multă muncă și utilaje.",
+      pro:"Capacitate enormă.",con:"Compactarea și manipularea pot fi obositoare."},
+    bale_loader:{name:"Colector / remorcă de baloți",icon:"📦",shape:"baleloader",category:"Bale Loaders",cost:"€€",base:true,
+      short:"Ridică și transportă automat mai mulți baloți, fără să-i iei unul câte unul cu furca.",
+      does:"Treci pe lângă baloți, mecanismul îi preia și îi aranjează pe remorcă.",
+      recognize:"Remorcă lungă cu brațe/cadru de colectare.",
+      types:["Pentru baloți rotunzi","Pentru baloți pătrați","Auto-load mod – dacă folosești moduri"],
+      buy:"Devine foarte valoros când ai zeci de baloți pe câmp.",
+      pro:"Economisește enorm de mult timp la logistică.",con:"Nu produce nimic; este doar pentru manipulare."}
+  };
+
+  const SETUPS = {
+    grass:[
+      {id:"cheap",label:"💸 Ieftin",invest:"Mică",speed:"Bun pentru început",summary:"Doar tai și ridici vrac. Fără baloți.",machines:["mower","forage_wagon"]},
+      {id:"balanced",label:"⚖️ Echilibrat",invest:"Medie",speed:"Mai rapid",summary:"Aduni materialul într-un rând și îl încarci mult mai ușor.",machines:["mower","windrower","forage_wagon"]},
+      {id:"productive",label:"🚀 Productiv",invest:"Mare",speed:"Câmpuri mari",summary:"Cositoare lată + windrower lat + remorcă mare. Puține opriri.",machines:["tractor","mower","windrower","forage_wagon"]}
+    ],
+    hay:[
+      {id:"cheap",label:"💸 Ieftin",invest:"Mică",speed:"Simplu",summary:"Cea mai ieftină linie: cosit → întors → ridicat vrac. Nu ai nevoie de presă sau windrower.",machines:["mower","tedder","forage_wagon"]},
+      {id:"balanced",label:"⚖️ Echilibrat",invest:"Medie",speed:"Foarte comod",summary:"Faci brazdă și baloți. E mai ușor de depozitat și hrănit animalele.",machines:["mower","tedder","windrower","baler_round"]},
+      {id:"productive",label:"🚀 Productiv",invest:"Mare / Mod",speed:"Puține treceri",summary:"Cositoare lată + tedder lat + presă cu windrower integrat. Poate elimina windrower-ul separat.",machines:["mower","tedder","combo_baler_windrower_mod"],alternatives:["windrower","baler_square"]}
+    ],
+    straw:[
+      {id:"cheap",label:"💸 Ieftin",invest:"Medie",speed:"Simplu",summary:"Lasă paiele din combină și balotează direct brazda.",machines:["combine","baler_round"]},
+      {id:"balanced",label:"⚖️ Echilibrat",invest:"Medie–Mare",speed:"Mai rapid",summary:"Windrower-ul strânge rânduri mai mari înainte de balotare.",machines:["combine","windrower","baler_round","bale_loader"]},
+      {id:"productive",label:"🚀 Productiv",invest:"Mare",speed:"Volum mare",summary:"Presă pătrată + colector de baloți pentru lucru aproape continuu.",machines:["combine","baler_square","bale_loader"]}
+    ],
+    silage:[
+      {id:"cheap",label:"💸 Ieftin",invest:"Medie",speed:"Fermă mică",summary:"Cosești → balotezi → înfoliezi. Ușor de înțeles și fără bunker.",machines:["mower","baler_round","wrapper"]},
+      {id:"balanced",label:"⚖️ Echilibrat",invest:"Mare",speed:"Două operații odată",summary:"Presa + înfoliator face balotul și îl înfoliează în aceeași trecere.",machines:["mower","windrower","baler_wrapper"]},
+      {id:"productive",label:"🚀 Productiv",invest:"Foarte mare",speed:"Cantități enorme",summary:"Tocător + remorci + bunker. Este linia pentru ferme mari și siloz mult.",machines:["forage_harvester","trailer","bunker_silo","tractor"]}
+    ],
+    tmr:[
+      {id:"cheap",label:"💸 Mixer ieftin",invest:"Medie",speed:"Manual",summary:"Remorcă mixer mică + încărcător frontal. Cea mai ieftină intrare în TMR.",machines:["tractor","mixer_small","frontloader"]},
+      {id:"balanced",label:"⚖️ Mixer mare",invest:"Mare",speed:"Rapid",summary:"Mixer cu volum mare + telehandler. Mai puține drumuri și încărcare mult mai comodă.",machines:["tractor","mixer_large","telehandler"]},
+      {id:"productive",label:"🤖 Robot automat",invest:"Foarte mare",speed:"Automat",summary:"Grajd cu feeding robot. Tu menții ingredientele în zonele lui, el prepară și distribuie TMR.",machines:["feeding_robot","telehandler"]},
+      {id:"factory",label:"🏭 Fabrică TMR",invest:"Mare / Mod",speed:"Producție în fundal",summary:"Stație/fabrică TMR din ModHub: livrezi ingredientele și ridici TMR produs.",machines:["tmr_factory","telehandler","trailer"]}
+    ],
+    grain:[
+      {id:"cheap",label:"💸 Ieftin",invest:"Mare",speed:"Standard",summary:"Semănătoare simplă + combină + remorcă.",machines:["tractor","seeder","combine","trailer"]},
+      {id:"balanced",label:"⚖️ Echilibrat",invest:"Mare",speed:"Mai puține treceri",summary:"Alege o semănătoare directă ca să sari cultivarea separată.",machines:["tractor","seeder","combine","trailer"]},
+      {id:"productive",label:"🚀 Productiv",invest:"Foarte mare",speed:"Câmpuri mari",summary:"Semănătoare lată combo + combină/header lat + remorcă mare.",machines:["tractor","seeder","combine","trailer"]}
+    ],
+    pigmix:[
+      {id:"cheap",label:"💸 Ieftin",invest:"Mică",speed:"Cel mai simplu",summary:"La început, cumpără hrană pentru porci și evită 4 linii de culturi diferite.",machines:["tractor","trailer"]},
+      {id:"balanced",label:"⚖️ Producție proprie",invest:"Foarte mare",speed:"Complex",summary:"Ai nevoie de utilaje pentru cereale + culturile de bază/proteine. Rădăcinoasele adaugă utilaje dedicate.",machines:["tractor","seeder","combine","trailer"]},
+      {id:"productive",label:"🚀 Fermă mare",invest:"Foarte mare",speed:"Flux complet",summary:"Eficient doar dacă ai deja mare parte din utilaje și culturi în rotație.",machines:["tractor","seeder","combine","trailer"]}
+    ]
+  };
+
+  function svgArt(shape){
+    const common='viewBox="0 0 180 86" aria-hidden="true"';
+    const wheel='<circle cx="52" cy="66" r="13"/><circle cx="132" cy="66" r="15"/>';
+    const map={
+      tractor:`<svg ${common}><g class="art-fill"><rect x="55" y="37" width="67" height="25" rx="4"/><rect x="88" y="18" width="31" height="26" rx="3"/><rect x="93" y="22" width="20" height="14" class="art-window"/>${wheel}<rect x="28" y="50" width="31" height="8" rx="3"/></g></svg>`,
+      mower:`<svg ${common}><g class="art-fill"><rect x="25" y="45" width="128" height="8" rx="4"/><circle cx="47" cy="60" r="10"/><circle cx="78" cy="60" r="10"/><circle cx="109" cy="60" r="10"/><circle cx="140" cy="60" r="10"/><path d="M28 42 L48 25 L56 30 L39 46Z"/></g></svg>`,
+      tedder:`<svg ${common}><g class="art-stroke"><line x1="20" y1="43" x2="160" y2="43"/>${[42,75,108,141].map(x=>`<circle cx="${x}" cy="52" r="19"/><line x1="${x-14}" y1="38" x2="${x+14}" y2="66"/><line x1="${x+14}" y1="38" x2="${x-14}" y2="66"/>`).join('')}</g></svg>`,
+      windrower:`<svg ${common}><g class="art-stroke"><line x1="22" y1="29" x2="91" y2="45"/><line x1="158" y1="29" x2="91" y2="45"/><circle cx="57" cy="52" r="27"/><circle cx="126" cy="52" r="27"/>${[0,45,90,135].map(a=>`<line x1="57" y1="52" x2="57" y2="26" transform="rotate(${a} 57 52)"/><line x1="126" y1="52" x2="126" y2="26" transform="rotate(${a} 126 52)"/>`).join('')}</g></svg>`,
+      wagon:`<svg ${common}><g class="art-fill"><path d="M31 24 H142 L133 59 H43 Z"/><rect x="22" y="55" width="118" height="7" rx="3"/>${wheel}</g></svg>`,
+      baler:`<svg ${common}><g class="art-fill"><rect x="48" y="24" width="82" height="39" rx="15"/><rect x="22" y="52" width="35" height="8" rx="3"/><circle cx="70" cy="67" r="11"/><circle cx="122" cy="67" r="11"/></g></svg>`,
+      squarebaler:`<svg ${common}><g class="art-fill"><rect x="44" y="25" width="91" height="37" rx="5"/><rect x="19" y="52" width="31" height="8"/><circle cx="65" cy="67" r="10"/><circle cx="126" cy="67" r="10"/></g></svg>`,
+      wrapper:`<svg ${common}><g class="art-stroke"><rect x="51" y="38" width="78" height="31" rx="6"/><circle cx="90" cy="44" r="29"/><path d="M62 22 Q90 5 118 22"/><line x1="62" y1="22" x2="48" y2="50"/><line x1="118" y1="22" x2="132" y2="50"/></g></svg>`,
+      combobaler:`<svg ${common}><g class="art-fill"><rect x="27" y="30" width="67" height="34" rx="12"/><rect x="91" y="34" width="61" height="30" rx="6"/><circle cx="56" cy="68" r="10"/><circle cx="126" cy="68" r="10"/><rect x="13" y="54" width="22" height="7"/></g></svg>`,
+      combo:`<svg ${common}><g class="art-fill"><rect x="80" y="28" width="70" height="35" rx="10"/><rect x="16" y="52" width="76" height="8" rx="4"/><circle cx="42" cy="47" r="18" class="art-outline"/><circle cx="74" cy="47" r="18" class="art-outline"/><circle cx="105" cy="68" r="10"/><circle cx="142" cy="68" r="10"/></g></svg>`,
+      loader:`<svg ${common}><g class="art-fill">${wheel}<rect x="54" y="40" width="59" height="21"/><path d="M92 40 L137 18 L143 23 L105 49 Z"/><path d="M139 17 L159 29 L154 34 L137 24 Z"/></g></svg>`,
+      telehandler:`<svg ${common}><g class="art-fill"><rect x="44" y="38" width="83" height="25" rx="5"/><rect x="49" y="20" width="33" height="25" rx="3"/><path d="M81 27 L151 13 L154 20 L85 39 Z"/>${wheel}</g></svg>`,
+      mixer:`<svg ${common}><g class="art-fill"><path d="M45 18 H127 L137 59 H36 Z"/><rect x="24" y="57" width="121" height="6"/>${wheel}<path d="M86 23 L96 54 H76 Z" class="art-window"/></g></svg>`,
+      factory:`<svg ${common}><g class="art-fill"><rect x="35" y="32" width="103" height="39"/><path d="M35 32 L62 14 L87 32 L112 14 L138 32 Z"/><rect x="49" y="47" width="21" height="24" class="art-window"/><rect x="91" y="45" width="31" height="15" class="art-window"/><rect x="143" y="18" width="10" height="53"/></g></svg>`,
+      robot:`<svg ${common}><g class="art-fill"><rect x="45" y="31" width="92" height="34" rx="12"/><rect x="71" y="18" width="41" height="21" rx="6"/><circle cx="82" cy="27" r="4" class="art-window"/><circle cx="101" cy="27" r="4" class="art-window"/><circle cx="64" cy="68" r="9"/><circle cx="120" cy="68" r="9"/></g></svg>`,
+      combine:`<svg ${common}><g class="art-fill"><rect x="64" y="24" width="66" height="38" rx="5"/><rect x="83" y="12" width="35" height="22" class="art-window"/><circle cx="79" cy="67" r="14"/><circle cx="127" cy="67" r="9"/><rect x="15" y="52" width="56" height="7"/><path d="M16 49 L55 36 L69 52 Z"/></g></svg>`,
+      seeder:`<svg ${common}><g class="art-fill"><path d="M45 27 H132 L122 51 H55 Z"/><rect x="23" y="51" width="132" height="7"/><circle cx="54" cy="65" r="8"/><circle cx="126" cy="65" r="8"/>${[35,55,75,95,115,135,150].map(x=>`<rect x="${x}" y="58" width="3" height="15"/>`).join('')}</g></svg>`,
+      trailer:`<svg ${common}><g class="art-fill"><path d="M32 25 H142 L132 57 H44 Z"/><circle cx="69" cy="66" r="10"/><circle cx="120" cy="66" r="10"/><rect x="17" y="53" width="30" height="6"/></g></svg>`,
+      forageharvester:`<svg ${common}><g class="art-fill"><rect x="62" y="27" width="72" height="35" rx="5"/><rect x="77" y="12" width="34" height="24" class="art-window"/><circle cx="78" cy="68" r="13"/><circle cx="129" cy="68" r="9"/><path d="M109 24 Q153 4 158 27" class="art-outline"/><rect x="15" y="53" width="53" height="7"/></g></svg>`,
+      bunker:`<svg ${common}><g class="art-fill"><path d="M28 22 H43 V70 H28 Z M137 22 H152 V70 H137 Z M43 62 H137 V70 H43 Z"/><path d="M46 57 Q90 39 134 57 V62 H46 Z" class="art-window"/></g></svg>`,
+      baleloader:`<svg ${common}><g class="art-fill"><rect x="29" y="36" width="116" height="8"/><path d="M41 22 H55 V58 H41 Z M72 22 H86 V58 H72 Z M103 22 H117 V58 H103 Z"/><circle cx="57" cy="66" r="9"/><circle cx="126" cy="66" r="9"/></g></svg>`
+    };
+    return map[shape] || map.tractor;
+  }
+
+  function renderAnimals(filter=""){
+    const q = filter.trim().toLowerCase(); animalGrid.innerHTML = "";
+    D.animals.filter(a => a.name.toLowerCase().includes(q)).forEach(a => {
+      const el = document.createElement("button"); el.type="button"; el.className="card clickable"; el.dataset.animal=a.id;
+      el.innerHTML = `<div class="card-top"><div class="animal-name"><span class="animal-emoji">${a.emoji}</span><div><h4>${a.name}</h4><span class="small muted">${a.products}</span></div></div><span class="tag ${diffClass(a.difficulty)}">${a.difficulty}</span></div><p class="card-desc"><b>Recomandat:</b> ${a.best}<br><b>Pentru început:</b> ${a.starter}</p><div class="food-preview">${a.foods.slice(0,4).map(f=>`<span class="food-pill">${f.name}</span>`).join("")}</div><span class="open-hint">Vezi hrană + strategie →</span>`;
+      animalGrid.appendChild(el);
+    });
+  }
+  function renderFoods(){
+    foodGrid.innerHTML="";
+    D.foods.forEach(f=>{ const el=document.createElement("button"); el.type="button";el.className="card clickable";el.dataset.food=f.id; el.innerHTML=`<div class="food-card-title"><span>${f.emoji}</span><div><h4>${f.name}</h4><p>${f.usedBy}</p></div></div><p class="card-desc">${f.tip}</p><div class="food-preview"><span class="tag good">${f.profit}</span><span class="tag ${diffClass(f.complexity)}">${f.complexity}</span></div><span class="open-hint">Vezi variante + utilaje →</span>`; foodGrid.appendChild(el); });
+  }
+  function renderCrops(filter=""){
+    const q=filter.trim().toLowerCase(); cropList.innerHTML="";
+    D.crops.filter(c=>(c.name+" "+c.uses).toLowerCase().includes(q)).forEach(c=>{ const el=document.createElement("article");el.className="crop-row";el.innerHTML=`<h4>🌾 ${c.name}</h4><p><b>Util pentru:</b> ${c.uses}</p><p><b>Flux:</b> ${c.flow}</p>`;cropList.appendChild(el); });
+  }
+
+  const screenStack=[];
+  let serial=0;
+  function pushScreen(screen){ screenStack.push(screen); history.pushState({fs25:true,depth:screenStack.length},"",`#fs25-${++serial}`); renderScreen(); }
+  function renderScreen(){
+    if(!screenStack.length){ hideModal(); return; }
+    const s=screenStack[screenStack.length-1];
+    if(s.type==="animal") renderAnimalScreen(s.id);
+    if(s.type==="food") renderFoodScreen(s.id);
+    if(s.type==="setup") renderSetupScreen(s.foodId,s.setupId);
+    if(s.type==="machine") renderMachineScreen(s.machineId,s.foodId,s.setupId);
+    showModal();
+  }
+  function backOne(){ if(screenStack.length) history.back(); }
+  window.addEventListener("popstate",()=>{ if(screenStack.length) screenStack.pop(); renderScreen(); });
+  window.FS25_BACK=()=>{ if(screenStack.length){backOne(); return true;} return false; };
+
+  function showModal(){ const m=$("#modal");m.hidden=false;document.body.style.overflow="hidden"; $("#modalBack").hidden=false; }
+  function hideModal(){ $("#modal").hidden=true;document.body.style.overflow=""; }
+
+  function renderAnimalScreen(id){
+    const a=D.animals.find(x=>x.id===id); if(!a)return;
+    $("#modalContent").innerHTML=`<div class="detail-title"><span class="big">${a.emoji}</span><div><h2 id="modalTitle">${a.name}</h2><div class="food-preview"><span class="tag ${diffClass(a.difficulty)}">${a.difficulty}</span><span class="tag good">Profit: ${a.profit}</span></div></div></div><div class="detail-section"><h3>Ce produce</h3><p class="muted">${a.products}</p></div><div class="detail-section"><h3>Ce mănâncă</h3>${a.foods.map(f=>`<div class="food-row"><div class="food-row-head"><b>${f.name}</b><span>${f.prod}</span></div><div class="small muted">${f.why}</div>${typeof f.score==="number"?`<div class="bar"><i style="width:${Math.max(5,Math.min(100,f.score))}%"></i></div>`:""}</div>`).join("")}</div><div class="detail-section"><h3>Recomandarea aplicației</h3><div class="panel"><b>🏆 Maxim:</b> ${a.best}<br><b>🌱 Începător:</b> ${a.starter}<p class="muted">${a.notes}</p></div></div><button type="button" class="primary go-plan" data-plan="${a.id}">Fă-mi planul complet</button>`;
+  }
+
+  function strategyCards(f){
+    const setups=SETUPS[f.id]||[];
+    if(!setups.length) return `<div class="panel"><b>Utilaje de bază</b><div class="machine-list">${f.machines.map(m=>`<span class="machine">🚜 ${m}</span>`).join("")}</div></div>`;
+    return `<div class="strategy-grid">${setups.map(s=>`<button type="button" class="strategy-card" data-setup="${s.id}" data-foodid="${f.id}"><div class="strategy-head"><b>${s.label}</b><span class="tag ${s.id==='cheap'?'good':s.id==='balanced'?'warn':'hard'}">Investiție ${s.invest}</span></div><p>${s.summary}</p><span class="small muted">${s.speed} · ${s.machines.length} tipuri principale</span><span class="open-hint">Vezi exact ce cumperi →</span></button>`).join("")}</div>`;
+  }
+
+  function renderFoodScreen(id){
+    const f=D.foods.find(x=>x.id===id); if(!f)return;
+    $("#modalContent").innerHTML=`<div class="detail-title"><span class="big">${f.emoji}</span><div><h2 id="modalTitle">${f.name}</h2><div class="food-preview"><span class="tag good">${f.profit}</span><span class="tag ${diffClass(f.complexity)}">${f.complexity}</span></div></div></div><div class="detail-section"><h3>Folosită de</h3><p class="muted">${f.usedBy}</p></div><div class="detail-section"><h3>Pașii de producție</h3>${f.steps.map((s,i)=>`<div class="step"><span class="step-num">${i+1}</span><div>${s}</div></div>`).join("")}</div><div class="detail-section"><h3>Alege cum vrei să lucrezi</h3><p class="muted">Poți alege varianta ieftină sau să investești în utilaje care reduc numărul de treceri.</p>${strategyCards(f)}</div><div class="detail-section"><div class="panel"><b>💡 Sfat:</b> ${f.tip}</div></div>`;
+  }
+
+  function renderSetupScreen(foodId,setupId){
+    const f=D.foods.find(x=>x.id===foodId); const s=(SETUPS[foodId]||[]).find(x=>x.id===setupId); if(!f||!s)return;
+    const cards=s.machines.map((id,i)=>machineCard(id,i+1)).join("");
+    const alt=s.alternatives?.length?`<div class="detail-section"><h3>Alternativă fără combo/mod</h3><p class="muted">Dacă nu vrei utilaj combinat, poți face aceleași operații separat:</p><div class="machine-cards compact">${s.alternatives.map(id=>machineCard(id)).join("")}</div></div>`:"";
+    $("#modalContent").innerHTML=`<div class="detail-title"><span class="big">${f.emoji}</span><div><span class="eyebrow">CONFIGURAȚIE</span><h2 id="modalTitle">${s.label} · ${f.name}</h2></div></div><div class="setup-summary"><div><span>Investiție</span><b>${s.invest}</b></div><div><span>Stil</span><b>${s.speed}</b></div><div><span>Tipuri</span><b>${s.machines.length}</b></div></div><div class="panel"><b>De ce varianta asta:</b><p>${s.summary}</p></div><div class="detail-section"><h3>Utilajele de care ai nevoie</h3><p class="muted">Apasă pe orice utilaj. Îți explic exact la ce e bun, cum îl recunoști și ce variantă merită cumpărată.</p><div class="machine-cards">${cards}</div></div>${alt}<div class="tip-box"><b>🛒 Regula mea de cumpărare:</b> dacă un utilaj scump îți înlocuiește două operații pe care le faci foarte des, merită. Dacă îl folosești o dată pe an, mai bine îl închiriezi sau alegi varianta simplă.</div>`;
+  }
+
+  function machineCard(id,n){ const m=MACHINES[id]; if(!m)return""; return `<button type="button" class="machine-card" data-machine="${id}"><div class="machine-thumb">${svgArt(m.shape)}</div><div class="machine-card-body"><div class="machine-card-title">${n?`<span class="step-mini">${n}</span>`:""}<div><b>${m.icon} ${m.name}</b><span>${m.category}${m.base?"":" · MOD"}</span></div></div><p>${m.short}</p><span class="open-hint">Descriere completă + tipuri →</span></div></button>`; }
+
+  function renderMachineScreen(machineId,foodId,setupId){
+    const m=MACHINES[machineId]; if(!m)return;
+    $("#modalContent").innerHTML=`<div class="machine-hero"><div class="machine-hero-art">${svgArt(m.shape)}</div><span class="tag ${m.base?'good':'warn'}">${m.base?'Joc de bază / categorie standard':'ModHub / depinde de mod'}</span><h2 id="modalTitle">${m.icon} ${m.name}</h2><p>${m.short}</p></div><div class="detail-section"><h3>Ce face, pe românește</h3><div class="explain-box">${m.does}</div></div><div class="detail-section"><h3>👀 Cum îl recunoști în magazin</h3><p>${m.recognize}</p><div class="store-path">🛒 Caută la: <b>${m.category}</b></div></div><div class="detail-section"><h3>Ce feluri există</h3><div class="type-list">${m.types.map((t,i)=>`<div><span>${i+1}</span><p>${t}</p></div>`).join("")}</div></div><div class="detail-section"><h3>Ce aș cumpăra eu în locul tău</h3><div class="recommend-box">${m.buy}</div></div><div class="proscons"><div><b>✅ Avantaj</b><p>${m.pro}</p></div><div><b>⚠️ Dezavantaj</b><p>${m.con}</p></div></div><div class="panel"><b>Cost relativ:</b> ${m.cost}<br><span class="small muted">Prețul exact depinde de model, DLC/mod și economia jocului.</span></div>`;
+  }
+
+  function switchView(name){ $$(".tab").forEach(b=>b.classList.toggle("active",b.dataset.view===name)); $$(".view").forEach(v=>v.classList.toggle("active",v.id===name+"View")); window.scrollTo({top:0,behavior:"smooth"}); }
+
+  $$(".tab").forEach(b=>b.addEventListener("click",()=>switchView(b.dataset.view)));
+  animalGrid.addEventListener("click",e=>{const b=e.target.closest("[data-animal]");if(b)pushScreen({type:"animal",id:b.dataset.animal});});
+  foodGrid.addEventListener("click",e=>{const b=e.target.closest("[data-food]");if(b)pushScreen({type:"food",id:b.dataset.food});});
+  $("#modalBack").addEventListener("click",backOne); $("#modalClose").addEventListener("click",backOne);
+  $("#modal").addEventListener("click",e=>{if(e.target.dataset.close)backOne();});
+  $("#modalContent").addEventListener("click",e=>{
+    const setup=e.target.closest("[data-setup]"); if(setup){pushScreen({type:"setup",foodId:setup.dataset.foodid,setupId:setup.dataset.setup});return;}
+    const machine=e.target.closest("[data-machine]"); if(machine){const top=screenStack[screenStack.length-1]||{};pushScreen({type:"machine",machineId:machine.dataset.machine,foodId:top.foodId,setupId:top.setupId});return;}
+    const plan=e.target.closest("[data-plan]"); if(plan){ while(screenStack.length) screenStack.pop(); hideModal(); switchView("planner"); $("#plannerAnimal").value=plan.dataset.plan; buildPlan(); }
+  });
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&screenStack.length)backOne();});
+  $("#animalSearch").addEventListener("input",e=>renderAnimals(e.target.value)); $("#cropSearch").addEventListener("input",e=>renderCrops(e.target.value));
+
+  const pa=$("#plannerAnimal"); D.animals.filter(a=>a.id!=="bees").forEach(a=>{const o=document.createElement("option");o.value=a.id;o.textContent=a.emoji+" "+a.name;pa.appendChild(o);}); $("#buildPlan").addEventListener("click",buildPlan);
+  function chooseFoodForAnimal(a,strategy){ if(a.id==="cows"||a.id==="buffalo") return strategy==="best"?"tmr":"hay"; if(a.id==="pigs")return"pigmix";if(a.id==="sheep"||a.id==="goats")return strategy==="best"?"hay":"grass";if(a.id==="chickens")return"grain";if(a.id==="horses")return"hay";return null; }
+  function buildPlan(){ const a=D.animals.find(x=>x.id===pa.value),strategy=$("#plannerStrategy").value;const foodId=chooseFoodForAnimal(a,strategy),f=D.foods.find(x=>x.id===foodId);let extra="";if(a.id==="horses")extra=`<div class="panel" style="margin-top:10px"><b>+ Ovăz:</b> cultivă ovăz cu semănătoare și combină; pentru cai urmărește și antrenarea/îngrijirea.</div>`;const setupButtons=f&&SETUPS[f.id]?`<div class="strategy-grid mini">${SETUPS[f.id].map(s=>`<button type="button" class="strategy-card planner-setup" data-open-food="${f.id}" data-open-setup="${s.id}"><b>${s.label}</b><span class="small muted">${s.summary}</span></button>`).join("")}</div>`:""; $("#planResult").innerHTML=`<h3>${a.emoji} Plan pentru ${a.name}</h3><p><b>Țintă:</b> ${strategy==="best"?"productivitate maximă":"setup simplu pentru început"}<br><b>Hrana aleasă:</b> ${f?f.name:a.starter}</p>${f?`<h4>Ce faci</h4>${f.steps.map((s,i)=>`<div class="step"><span class="step-num">${i+1}</span><div>${s}</div></div>`).join("")}<h4>Alege bugetul pentru utilaje</h4>${setupButtons}`:""}${extra}<div class="panel" style="margin-top:14px"><b>💰 Eficiență:</b> ${a.notes}</div>`; }
+  $("#planResult").addEventListener("click",e=>{const b=e.target.closest("[data-open-setup]");if(b){pushScreen({type:"setup",foodId:b.dataset.openFood,setupId:b.dataset.openSetup});}});
+
+  const quick={straw:"<b>Paiele:</b> la grâu/orz/ovăz lasă combina să facă brazdă de paie. Apoi treci cu <b>presa de balotat</b> direct peste ele. Windrower-ul doar le adună în rând; nu face baloți.",lime:"<b>Var:</b> dacă harta spune că terenul are nevoie de var, îl poți aplica. După aceea continui cu pregătirea solului / semănatul.",chicken:"<b>Găini:</b> folosește grâu, orz sau sorg. Cel mai sigur: pune cerealele într-o remorcă și descarcă exact în triggerul de hrană al cotețului.",hay:"<b>Fân:</b> cositoare → <b>tedder</b> (obligatoriu) → opțional windrower → presă sau remorcă de furaje. Intră la Hrană → Fân ca să alegi acum Ieftin / Echilibrat / Productiv.",silage:"<b>Siloz:</b> pentru fermă mică: cositoare → presă → înfoliator. Pentru volum mare: forage harvester → remorci → bunker → compactare.",field:"<b>După recoltare:</b> verifică starea câmpului. Var dacă cere → arat doar dacă cere → cultivat sau semănătoare directă → semănat → cilindru opțional → fertilizare / buruieni."};
+  $$(".quick-card").forEach(b=>b.addEventListener("click",()=>$("#quickAnswer").innerHTML=quick[b.dataset.q]));
+
+  renderAnimals();renderFoods();renderCrops();buildPlan();
+  let deferredPrompt;const ib=$("#installBtn");window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;ib.hidden=false;});ib.addEventListener("click",async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;ib.hidden=true;});if("serviceWorker" in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js").catch(()=>{});
+})();
+
+</script>
+</body>
+</html>
