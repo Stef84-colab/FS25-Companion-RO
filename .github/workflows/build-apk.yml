@@ -38,7 +38,7 @@ jobs:
           mkdir -p app/src/main/res/values
           mkdir -p app/src/main/res/drawable
 
-          cp FS25_Companion_Offline_v1_1.html app/src/main/assets/index.html
+          curl -L "https://raw.githubusercontent.com/Stef84-colab/FS25-Companion-RO/925929ff09baf1976009ca0cc5a2b85872ea998f/FS25_Companion_Offline_v1_1.html" -o app/src/main/assets/index.html
 
           cat > settings.gradle <<'EOF'
           pluginManagement {
