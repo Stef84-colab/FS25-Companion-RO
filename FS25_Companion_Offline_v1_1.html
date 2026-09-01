@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#173d22">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Companion românesc pentru Farming Simulator 25: animale, hrană, mixuri, culturi, utilaje și pași.">
+  
+  
+  
+  <style>
+:root{
+  --bg:#0c1710; --panel:#13231a; --panel2:#182c20; --text:#f4f7f4; --muted:#aab8ae;
+  --line:#2d4233; --accent:#79cf78; --accent2:#d5f273; --warn:#ffd36a; --danger:#ff8b75;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:
+radial-gradient(circle at 100% 0%,#21351f 0,transparent 34rem),var(--bg);color:var(--text)}
+button,input,select{font:inherit}
+button{cursor:pointer}
+#app{max-width:980px;margin:auto;padding:14px 14px 40px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 2px 14px}
+.brand{display:flex;gap:11px;align-items:center;min-width:0}
+.brand-icon{width:48px;height:48px;border-radius:13px}
+h1{font-size:18px;margin:0}.brand p{font-size:12px;color:var(--muted);margin:2px 0 0}
+.install-btn,.primary{border:0;border-radius:12px;background:var(--accent);color:#07120a;font-weight:800;padding:11px 14px;min-height:44px}
+.hero{display:grid;grid-template-columns:1fr auto;gap:14px;padding:22px;background:linear-gradient(135deg,#203b27,#13251a);
+border:1px solid #38503d;border-radius:22px}
+.eyebrow{font-size:11px;letter-spacing:.14em;color:var(--accent2);font-weight:800}
+.hero h2{font-size:28px;line-height:1.05;margin:7px 0 9px}.hero p{color:#c7d1c9;margin:0;max-width:620px}
+.hero-stat{min-width:105px;align-self:center;text-align:center;background:#0f1f15;border:1px solid #35523a;border-radius:18px;padding:14px}
+.hero-stat strong{display:block;font-size:30px;color:var(--accent2)}.hero-stat span{font-size:11px;color:var(--muted)}
+.tabs{display:flex;gap:8px;overflow:auto;padding:14px 0 10px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}.tab{white-space:nowrap;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:13px;padding:11px 13px;min-height:44px}
+.tab.active{background:var(--accent);color:#08140a;border-color:var(--accent);font-weight:800}
+.view{display:none}.view.active{display:block}
+.section-title{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:12px 1px}
+.section-title h3{font-size:22px;margin:0;color:#ffffff}.section-title p{color:#d6ddd7;font-size:13px;margin:4px 0 0}
+input[type=search],select{border:1px solid var(--line);background:#0e1c13;color:var(--text);border-radius:12px;padding:11px 12px;min-height:44px;outline:none}
+input[type=search]{width:min(260px,45vw)}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+.grid{display:grid;gap:12px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:17px;padding:15px;min-width:0;color:var(--text)}
+.card.clickable{transition:transform .12s ease,border-color .12s ease}.card.clickable:active{transform:scale(.985)}
+.card-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.animal-name{display:flex;align-items:center;gap:9px}.animal-emoji{font-size:34px}.card h4{margin:0;font-size:18px;color:#ffffff}.card, .card *{text-shadow:none}
+.muted{color:var(--muted)}.small{font-size:12px}.tag{display:inline-flex;border-radius:999px;border:1px solid var(--line);padding:5px 8px;font-size:11px;color:#d9e4dc}
+.tag.good{background:#19351f;color:#bff5bb}.tag.warn{background:#352e18;color:#ffecad}.tag.hard{background:#38231f;color:#ffcabf}
+.card-desc{color:#eef3ef;font-size:13px;line-height:1.45;margin:12px 0}
+.food-preview{display:flex;flex-wrap:wrap;gap:6px}.food-pill{background:#0d1d13;border:1px solid #304834;border-radius:999px;padding:6px 8px;font-size:11px;color:#ffffff}
+.open-hint{display:block;margin-top:12px;color:#e6ff96;font-size:12px;font-weight:750}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;color:#ffffff}
+.planner{display:grid;gap:12px}.planner label{display:grid;gap:7px;font-size:13px;color:var(--muted)}
+.plan-result:empty{display:none}.plan-result{margin-top:6px;border-top:1px solid var(--line);padding-top:15px}
+.step{display:grid;grid-template-columns:32px 1fr;gap:10px;margin:10px 0;align-items:start}
+.step-num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#24422a;color:var(--accent2);font-weight:900}
+.machine-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}.machine{padding:7px 9px;border:1px solid #38533e;background:#101e15;border-radius:10px;font-size:12px;color:#ffffff}
+.list{display:grid;gap:10px}.crop-row{border:1px solid var(--line);background:var(--panel);border-radius:15px;padding:14px}
+.crop-row h4{margin:0 0 6px;color:#ffffff}.crop-row p{margin:5px 0;color:#eef3ef;font-size:13px;line-height:1.45}
+.quick-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.quick-card{text-align:left;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:14px;min-height:82px}
+.quick-card b,.quick-card span{display:block}.quick-card span{font-size:12px;color:var(--muted);margin-top:5px}.quick-answer{margin-top:12px;line-height:1.55}
+.modal{position:fixed;inset:0;z-index:20;display:grid;place-items:end center}.modal[hidden]{display:none}
+.modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.68)}.modal-card{position:relative;width:min(760px,100%);max-height:88vh;overflow:auto;background:#102017;border:1px solid #38513d;border-radius:22px 22px 0 0;padding:20px 17px 26px}
+.close{position:sticky;top:0;float:right;border:1px solid var(--line);background:#0c1810;color:var(--text);width:42px;height:42px;border-radius:50%;font-size:26px;z-index:2}
+.detail-title{display:flex;gap:12px;align-items:center;padding-right:48px}.detail-title .big{font-size:46px}.detail-title h2{margin:0;color:#ffffff}
+.detail-section{margin-top:18px;color:#ffffff}.detail-section h3{font-size:16px;margin:0 0 9px;color:#ffffff}.food-row{border:1px solid var(--line);border-radius:13px;padding:11px;margin:7px 0;color:#ffffff}
+.food-row-head{display:flex;justify-content:space-between;gap:8px}.bar{height:7px;background:#09140d;border-radius:99px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:var(--accent)}
+.food-card-title{display:flex;gap:10px;align-items:center}.food-card-title span{font-size:30px}
+.food-card-title h4{margin:0;color:#ffffff}.food-card-title p{margin:2px 0 0;font-size:12px;color:#d6ddd7}
+footer{color:#d6ddd7;font-size:12px;line-height:1.5;margin:22px 4px}
+@media(max-width:650px){
+  #app{padding:10px 10px 30px}.hero{grid-template-columns:1fr;padding:18px}.hero-stat{display:none}.hero h2{font-size:25px}
+  .cards,.quick-grid{grid-template-columns:1fr}.section-title{align-items:stretch;flex-direction:column}
+  input[type=search]{width:100%}.brand p{display:none}
+}
+@media(min-width:780px){.cards{grid-template-columns:repeat(3,minmax(0,1fr))}.modal{place-items:center}.modal-card{border-radius:22px;max-height:82vh}}
+
+input::placeholder{color:#d3ddd5;opacity:1}
+</style>
+  <title>FS25 Companion RO</title>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon" style="display:grid;place-items:center;background:#173d22;font-size:28px">🚜</div>
+      <div>
+        <h1>FS25 Companion RO</h1>
+        <p>De la „ce mănâncă?” până la „ce utilaj îmi trebuie?”</p>
+      </div>
+    </div>
+    <button id="installBtn" class="install-btn" hidden>⬇ Instalează</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <span class="eyebrow">GHID RAPID + PLANIFICATOR</span>
+        <h2>Ce vrei să faci în fermă?</h2>
+        <p>Alege o categorie. Aplicația îți leagă animalul de hrană, cultura necesară și utilajele de care ai nevoie.</p>
+      </div>
+      <div class="hero-stat">
+        <strong id="animalCount">8</strong>
+        <span>tipuri de animale</span>
+      </div>
+    </section>
+
+    <nav class="tabs" aria-label="Navigare">
+      <button class="tab active" data-view="animals">🐄 Animale</button>
+      <button class="tab" data-view="food">🥣 Hrană</button>
+      <button class="tab" data-view="planner">🧭 Planificator</button>
+      <button class="tab" data-view="crops">🌾 Culturi</button>
+      <button class="tab" data-view="quick">⚡ Rapid</button>
+    </nav>
+
+    <section id="animalsView" class="view active">
+      <div class="section-title">
+        <div><h3>Animale</h3><p>Apasă pe animal pentru hrană, productivitate și recomandare.</p></div>
+        <input id="animalSearch" type="search" placeholder="Caută animal..." aria-label="Caută animal">
+      </div>
+      <div id="animalGrid" class="grid cards"></div>
+    </section>
+
+    <section id="foodView" class="view">
+      <div class="section-title">
+        <div><h3>Hrană & mixuri</h3><p>Vezi exact cum o produci și ce utilaje îți trebuie.</p></div>
+      </div>
+      <div id="foodGrid" class="grid cards"></div>
+    </section>
+
+    <section id="plannerView" class="view">
+      <div class="section-title">
+        <div><h3>Planificator hrană</h3><p>Alege animalul și strategia; îți dau fluxul complet.</p></div>
+      </div>
+      <div class="panel planner">
+        <label>Animal
+          <select id="plannerAnimal"></select>
+        </label>
+        <label>Strategie
+          <select id="plannerStrategy">
+            <option value="best">Maximă productivitate</option>
+            <option value="starter">Simplu pentru început</option>
+          </select>
+        </label>
+        <button id="buildPlan" class="primary">Construiește planul</button>
+        <div id="planResult" class="plan-result"></div>
+      </div>
+    </section>
+
+    <section id="cropsView" class="view">
+      <div class="section-title">
+        <div><h3>Culturi utile pentru animale</h3><p>Ce obții și la ce îți folosește.</p></div>
+        <input id="cropSearch" type="search" placeholder="Caută cultură..." aria-label="Caută cultură">
+      </div>
+      <div id="cropList" class="list"></div>
+    </section>
+
+    <section id="quickView" class="view">
+      <div class="section-title"><div><h3>Ajutor rapid</h3><p>Răspunsuri la blocajele cele mai comune.</p></div></div>
+      <div class="quick-grid">
+        <button class="quick-card" data-q="straw"><b>🟨 Am paie pe câmp</b><span>Cum le adun?</span></button>
+        <button class="quick-card" data-q="lime"><b>⚪ Terenul cere var</b><span>În ce ordine?</span></button>
+        <button class="quick-card" data-q="chicken"><b>🐔 Nu pot hrăni găinile</b><span>Ce verific?</span></button>
+        <button class="quick-card" data-q="hay"><b>🌾 Vreau fân</b><span>Ce utilaje cumpăr?</span></button>
+        <button class="quick-card" data-q="silage"><b>🟩 Vreau siloz</b><span>Cea mai simplă metodă</span></button>
+        <button class="quick-card" data-q="field"><b>🌱 După recoltare</b><span>Ce fac cu terenul?</span></button>
+      </div>
+      <div id="quickAnswer" class="panel quick-answer">Alege o situație de mai sus.</div>
+    </section>
+  </main>
+
+  <div id="modal" class="modal" hidden>
+    <div class="modal-backdrop" data-close="1"></div>
+    <article class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="close" id="modalClose" aria-label="Închide">×</button>
+      <div id="modalContent"></div>
+    </article>
+  </div>
+
+  <footer>
+    <p><b>Notă:</b> Profitul depinde de hartă, dificultate, prețuri și economie. Etichetele din aplicație sunt orientative pentru complexitate/eficiență, nu sume fixe.</p>
+    <p class="small">Bază: mecanici FS25 + Academia Farming Simulator. Versiune 1.0.</p>
+  </footer>
+</div>
+
+<script>window.FS25_DATA = {"animals":[{"id":"cows","name":"Vaci","emoji":"🐄","difficulty":"Mediu–Ridicat","profit":"Ridicat","products":"Lapte, animale; în funcție de adăpost și setup: gunoi de grajd / dejecții","foods":[{"name":"Iarbă","prod":"~40%","score":40,"why":"Foarte simplă și ieftină, dar productivitate mică."},{"name":"Fân","prod":"~80%","score":80,"why":"Foarte bun la început; simplu de stocat în baloți."},{"name":"Siloz","prod":"~80%","score":80,"why":"Bun dacă ai deja linie de iarbă/porumb și vrei volum mare."},{"name":"TMR","prod":"100%","score":100,"why":"Cea mai bună hrană pentru producția maximă de lapte."}],"best":"TMR","starter":"Fân","notes":"Dacă vrei lapte serios, treci la TMR. Pentru început, fânul este mult mai simplu."},{"id":"buffalo","name":"Bivoli de apă","emoji":"🐃","difficulty":"Mediu–Ridicat","profit":"Ridicat","products":"Lapte de bivoliță, animale; posibil gunoi/dejecții în funcție de adăpost","foods":[{"name":"Iarbă","prod":"~40%","score":40,"why":"Foarte simplă, productivitate redusă."},{"name":"Fân","prod":"~80%","score":80,"why":"Simplu și eficient."},{"name":"Siloz","prod":"~80%","score":80,"why":"Bun pentru ferme mai dezvoltate."},{"name":"TMR","prod":"100%","score":100,"why":"Maximizează productivitatea."}],"best":"TMR","starter":"Fân","notes":"Flux foarte asemănător cu vacile."},{"id":"pigs","name":"Porci","emoji":"🐖","difficulty":"Ridicat","profit":"Mediu–Ridicat","products":"Animale pentru vânzare; gunoi de grajd / dejecții în funcție de setup","foods":[{"name":"Bază 50%","prod":"50% din rație","score":50,"why":"Porumb sau sorg."},{"name":"Cereale 25%","prod":"25% din rație","score":25,"why":"Grâu sau orz."},{"name":"Proteine 20%","prod":"20% din rație","score":20,"why":"Canola, floarea-soarelui sau soia."},{"name":"Rădăcinoase 5%","prod":"5% din rație","score":5,"why":"Cartofi sau sfeclă de zahăr."}],"best":"Rație completă 50/25/20/5","starter":"Hrană pentru porci cumpărată","notes":"Cei mai complicați la hrană. La început e adesea mai comod să cumperi pig food."},{"id":"sheep","name":"Oi","emoji":"🐑","difficulty":"Ușor","profit":"Bun","products":"Lână, animale","foods":[{"name":"Iarbă","prod":"100%","score":100,"why":"Cea mai ieftină și simplă."},{"name":"Fân","prod":"100%","score":100,"why":"La fel de productiv ca iarba și se stochează ușor."}],"best":"Iarbă / Fân","starter":"Iarbă","notes":"Una dintre cele mai bune alegeri pentru începători."},{"id":"goats","name":"Capre","emoji":"🐐","difficulty":"Ușor","profit":"Bun–Ridicat","products":"Lapte de capră, animale","foods":[{"name":"Iarbă","prod":"100%","score":100,"why":"Simplu și ieftin."},{"name":"Fân","prod":"100%","score":100,"why":"100% productivitate și ușor de stocat."}],"best":"Iarbă / Fân","starter":"Iarbă","notes":"Foarte simple la hrană, iar laptele poate intra în producții."},{"id":"chickens","name":"Găini","emoji":"🐔","difficulty":"Foarte ușor","profit":"Bun","products":"Ouă, animale","foods":[{"name":"Grâu","prod":"Hrană completă","score":100,"why":"Foarte bun dacă îl cultivi deja."},{"name":"Orz","prod":"Hrană completă","score":100,"why":"Alternativă simplă."},{"name":"Sorg","prod":"Hrană completă","score":100,"why":"Alternativă bună pentru hrană."},{"name":"Chicken feed / BigBag","prod":"Hrană completă","score":100,"why":"Cumperi direct, dar costă mai mult."}],"best":"Cereale cultivate de tine","starter":"Grâu","notes":"Excelente pentru început: puține utilaje speciale și ouăle se vând."},{"id":"horses","name":"Cai","emoji":"🐎","difficulty":"Mediu","profit":"Specializat","products":"Valoare crescută prin îngrijire/antrenament și vânzare","foods":[{"name":"Fân","prod":"Necesar","score":80,"why":"Se produce din iarbă uscată."},{"name":"Ovăz","prod":"Necesar","score":90,"why":"Cultură dedicată foarte potrivită pentru cai."}],"best":"Fân + ovăz","starter":"Fân + ovăz","notes":"Profitul depinde mult de antrenare/îngrijire, nu doar de hrană."},{"id":"bees","name":"Albine","emoji":"🐝","difficulty":"Foarte ușor","profit":"Pasiv","products":"Miere","foods":[{"name":"Nu necesită hrană manuală","prod":"Pasiv","score":100,"why":"Plasezi stupii și gestionezi paleții de miere."}],"best":"Fără hrană","starter":"Stupi","notes":"Cea mai pasivă ramură de animale."}],"foods":[{"id":"grass","name":"Iarbă","emoji":"🌱","profit":"Foarte ieftină","complexity":"Foarte mică","usedBy":"Oi, capre, vaci, bivoli","steps":["Cumpără/deține un teren cu iarbă","Cosește iarba","O poți duce vrac cu remorcă de furaje sau o poți balota","Descarcă/bagă balotul la punctul de hrană"],"machines":["Tractor","Cositoare","Opțional: windrower","Remorcă de furaje SAU presă de balotat"],"tip":"Pentru oi și capre, iarba este una dintre cele mai ieftine căi spre productivitate maximă."},{"id":"hay","name":"Fân","emoji":"🌾","profit":"Foarte bun","complexity":"Mică","usedBy":"Oi, capre, vaci, bivoli, cai","steps":["Cosește iarba","Treci cu tedder-ul ca să transformi iarba în fân","Opțional: strânge în brazdă cu windrower","Adună cu remorcă de furaje sau balotează","Depozitează / hrănește animalele"],"machines":["Tractor","Cositoare","Tedder / întorcător","Opțional: windrower","Remorcă de furaje SAU presă de balotat"],"tip":"Fânul e excelent ca hrană de început pentru bovine și rămâne 100% pentru oi/capre."},{"id":"straw","name":"Paie","emoji":"🟨","profit":"Resursă secundară","complexity":"Mică","usedBy":"TMR, așternut / gunoi de grajd în anumite adăposturi","steps":["Cultivă grâu, orz sau ovăz","La recoltare activează opțiunea de a lăsa paie (straw swath)","Adună paiele direct cu presa sau cu remorcă de furaje","Depozitează pentru TMR/așternut"],"machines":["Tractor","Semănătoare","Combină + header potrivit","Presă de balotat SAU remorcă de furaje"],"tip":"Paiele sunt un bonus foarte bun când oricum cultivi cereale."},{"id":"silage","name":"Siloz","emoji":"🟩","profit":"Foarte bun","complexity":"Mediu","usedBy":"Vaci, bivoli, TMR; silozul poate fi și vândut","steps":["Varianta simplă: cosește iarba","Balotează iarba cu o presă compatibilă","Înfoliază baloții de iarbă","Așteaptă fermentarea","Alternativ: pune iarbă/tocătură într-un bunker, compactează și acoperă"],"machines":["Tractor","Cositoare","Presă de balotat","Înfoliator SAU presă+înfoliator combinat","Alternativ bunker silo + utilaj de compactare"],"tip":"Pentru o fermă mică, baloții înfoliați sunt de obicei mai ușor de gestionat decât bunker-ul."},{"id":"tmr","name":"TMR (rație totală mixtă)","emoji":"🥣","profit":"Maxim pentru lapte","complexity":"Ridicată","usedBy":"Vaci și bivoli","steps":["Pregătește fân","Pregătește siloz","Pregătește paie","Ia mineral feed dacă rețeta/setup-ul îl cere","Încarcă ingredientele într-o remorcă mixer","Urmărește indicatorul mixerului până când amestecul este TMR","Descarcă în hrănitorul bovinelor"],"machines":["Tractor","Remorcă mixer / forage mixer wagon","Încărcător frontal/telehandler","Furcă de baloți","Linia de utilaje pentru fân","Linia de utilaje pentru siloz"],"tip":"Este varianta cu cea mai mare productivitate la lapte. Nu arunca ingredientele la întâmplare: urmărește bara/rețeta mixerului."},{"id":"pigmix","name":"Rație completă pentru porci","emoji":"🐷","profit":"Optimă pentru porci","complexity":"Foarte ridicată","usedBy":"Porci","steps":["Asigură baza: porumb sau sorg (50%)","Asigură cereale: grâu sau orz (25%)","Asigură proteine: canola/floarea-soarelui/soia (20%)","Asigură rădăcinoase: cartofi sau sfeclă de zahăr (5%)","Livrează categoriile în hrănitor sau folosește pig food cumpărat"],"machines":["Tractor","Semănători/planter potrivite culturilor","Combină + headere","Pentru cartofi/sfeclă: utilaje dedicate","Remorci pentru transport"],"tip":"La început, pig food cumpărat poate fi mai simplu. Producția proprie devine interesantă când ai deja mai multe culturi."},{"id":"grain","name":"Cereale pentru găini","emoji":"🌾","profit":"Foarte bun","complexity":"Mică","usedBy":"Găini","steps":["Alege grâu, orz sau sorg","Pregătește terenul","Seamănă în perioada corectă","Fertilizează / gestionează buruieni","Recoltează","Păstrează o parte în loc să vinzi tot","Descarcă la punctul de hrană al cotețului"],"machines":["Tractor","Cultivator sau semănătoare directă","Semănătoare","Fertilizator","Combină + header","Remorcă"],"tip":"Grâul/orzul sunt foarte practice deoarece poți obține și paie pentru alte animale."}],"crops":[{"name":"Grâu","uses":"Găini, porci (cereale), paie","flow":"Pregătire sol → semănat → fertilizare → recoltat cu combină → cereale + opțional paie"},{"name":"Orz","uses":"Găini, porci (cereale), paie","flow":"Pregătire sol → semănat → fertilizare → recoltat cu combină → cereale + opțional paie"},{"name":"Ovăz","uses":"Cai, paie","flow":"Pregătire sol → semănat → fertilizare → recoltat → ovăz + paie"},{"name":"Sorg","uses":"Găini, porci (bază)","flow":"Pregătire sol → semănat → fertilizare → recoltat"},{"name":"Porumb","uses":"Porci (bază), tocătură/siloz","flow":"Plantare → îngrijire → combină cu corn header SAU forage harvester pentru tocătură"},{"name":"Soia","uses":"Porci (proteine), vânzare","flow":"Semănat → fertilizat → recoltat cu combină"},{"name":"Canola","uses":"Porci (proteine), ulei/producții","flow":"Semănat → fertilizat → recoltat cu combină"},{"name":"Floarea-soarelui","uses":"Porci (proteine), ulei","flow":"Semănat → fertilizat → recoltat cu header compatibil"},{"name":"Cartofi","uses":"Porci (rădăcinoase)","flow":"Plantator dedicat → îngrijire → recoltator dedicat"},{"name":"Sfeclă de zahăr","uses":"Porci (rădăcinoase), producții","flow":"Semănat/plantat cu utilaj compatibil → îngrijire → recoltare dedicată"},{"name":"Iarbă","uses":"Oi, capre, vaci, bivoli, fân, siloz","flow":"Semănat o dată → cosit repetat → iarbă / tedder pentru fân / fermentare pentru siloz"}]};</script>
+<script>
+(() => {
+  const D = window.FS25_DATA;
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
+  const animalGrid = $("#animalGrid"), foodGrid = $("#foodGrid"), cropList = $("#cropList");
+  $("#animalCount").textContent = D.animals.length;
+
+  const diffClass = d => /ridicat/i.test(d) ? "hard" : /mediu/i.test(d) ? "warn" : "good";
+
+  function renderAnimals(filter=""){
+    const q = filter.trim().toLowerCase();
+    animalGrid.innerHTML = "";
+    D.animals.filter(a => a.name.toLowerCase().includes(q)).forEach(a => {
+      const el = document.createElement("button");
+      el.type="button"; el.className="card clickable"; el.dataset.animal=a.id;
+      el.innerHTML = `
+        <div class="card-top">
+          <div class="animal-name"><span class="animal-emoji">${a.emoji}</span><div><h4>${a.name}</h4><span class="small muted">${a.products}</span></div></div>
+          <span class="tag ${diffClass(a.difficulty)}">${a.difficulty}</span>
+        </div>
+        <p class="card-desc"><b>Recomandat:</b> ${a.best}<br><b>Pentru început:</b> ${a.starter}</p>
+        <div class="food-preview">${a.foods.slice(0,4).map(f=>`<span class="food-pill">${f.name}</span>`).join("")}</div>
+        <span class="open-hint">Vezi hrană + strategie →</span>`;
+      animalGrid.appendChild(el);
+    });
+  }
+
+  function renderFoods(){
+    foodGrid.innerHTML="";
+    D.foods.forEach(f=>{
+      const el=document.createElement("button");
+      el.type="button";el.className="card clickable";el.dataset.food=f.id;
+      el.innerHTML=`<div class="food-card-title"><span>${f.emoji}</span><div><h4>${f.name}</h4><p>${f.usedBy}</p></div></div>
+      <p class="card-desc">${f.tip}</p>
+      <div class="food-preview"><span class="tag good">${f.profit}</span><span class="tag ${diffClass(f.complexity)}">${f.complexity}</span></div>
+      <span class="open-hint">Vezi pașii + utilajele →</span>`;
+      foodGrid.appendChild(el);
+    })
+  }
+
+  function renderCrops(filter=""){
+    const q=filter.trim().toLowerCase(); cropList.innerHTML="";
+    D.crops.filter(c=>(c.name+" "+c.uses).toLowerCase().includes(q)).forEach(c=>{
+      const el=document.createElement("article");el.className="crop-row";
+      el.innerHTML=`<h4>🌾 ${c.name}</h4><p><b>Util pentru:</b> ${c.uses}</p><p><b>Flux:</b> ${c.flow}</p>`;
+      cropList.appendChild(el);
+    })
+  }
+
+  function openAnimal(id){
+    const a=D.animals.find(x=>x.id===id); if(!a)return;
+    $("#modalContent").innerHTML=`
+      <div class="detail-title"><span class="big">${a.emoji}</span><div><h2 id="modalTitle">${a.name}</h2><div class="food-preview"><span class="tag ${diffClass(a.difficulty)}">${a.difficulty}</span><span class="tag good">Profit: ${a.profit}</span></div></div></div>
+      <div class="detail-section"><h3>Ce produce</h3><p class="muted">${a.products}</p></div>
+      <div class="detail-section"><h3>Ce mănâncă</h3>${a.foods.map(f=>`
+        <div class="food-row"><div class="food-row-head"><b>${f.name}</b><span>${f.prod}</span></div><div class="small muted">${f.why}</div>
+        ${typeof f.score==="number" ? `<div class="bar"><i style="width:${Math.max(5,Math.min(100,f.score))}%"></i></div>`:""}</div>`).join("")}</div>
+      <div class="detail-section"><h3>Recomandarea aplicației</h3><div class="panel"><b>🏆 Maxim:</b> ${a.best}<br><b>🌱 Începător:</b> ${a.starter}<p class="muted">${a.notes}</p></div></div>
+      <button type="button" class="primary go-plan" data-plan="${a.id}">Fă-mi planul complet</button>`;
+    showModal();
+    $(".go-plan").addEventListener("click",()=>{ closeModal(); switchView("planner"); $("#plannerAnimal").value=a.id; buildPlan(); });
+  }
+
+  function openFood(id){
+    const f=D.foods.find(x=>x.id===id); if(!f)return;
+    $("#modalContent").innerHTML=`
+      <div class="detail-title"><span class="big">${f.emoji}</span><div><h2 id="modalTitle">${f.name}</h2><div class="food-preview"><span class="tag good">${f.profit}</span><span class="tag ${diffClass(f.complexity)}">${f.complexity}</span></div></div></div>
+      <div class="detail-section"><h3>Folosită de</h3><p class="muted">${f.usedBy}</p></div>
+      <div class="detail-section"><h3>Pașii de producție</h3>${f.steps.map((s,i)=>`<div class="step"><span class="step-num">${i+1}</span><div>${s}</div></div>`).join("")}</div>
+      <div class="detail-section"><h3>Utilaje necesare</h3><div class="machine-list">${f.machines.map(m=>`<span class="machine">🚜 ${m}</span>`).join("")}</div></div>
+      <div class="detail-section"><div class="panel"><b>💡 Sfat:</b> ${f.tip}</div></div>`;
+    showModal();
+  }
+
+  function showModal(){ const m=$("#modal");m.hidden=false;document.body.style.overflow="hidden";$("#modalClose").focus(); }
+  function closeModal(){ $("#modal").hidden=true;document.body.style.overflow=""; }
+
+  function switchView(name){
+    $$(".tab").forEach(b=>b.classList.toggle("active",b.dataset.view===name));
+    $$(".view").forEach(v=>v.classList.toggle("active",v.id===name+"View"));
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  $$(".tab").forEach(b=>b.addEventListener("click",()=>switchView(b.dataset.view)));
+  animalGrid.addEventListener("click",e=>{const b=e.target.closest("[data-animal]");if(b)openAnimal(b.dataset.animal)});
+  foodGrid.addEventListener("click",e=>{const b=e.target.closest("[data-food]");if(b)openFood(b.dataset.food)});
+  $("#modalClose").addEventListener("click",closeModal);
+  $("#modal").addEventListener("click",e=>{if(e.target.dataset.close)closeModal()});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#modal").hidden)closeModal()});
+  $("#animalSearch").addEventListener("input",e=>renderAnimals(e.target.value));
+  $("#cropSearch").addEventListener("input",e=>renderCrops(e.target.value));
+
+  const pa=$("#plannerAnimal");
+  D.animals.filter(a=>a.id!=="bees").forEach(a=>{const o=document.createElement("option");o.value=a.id;o.textContent=a.emoji+" "+a.name;pa.appendChild(o)});
+  $("#buildPlan").addEventListener("click",buildPlan);
+
+  function chooseFoodForAnimal(a, strategy){
+    if(a.id==="cows"||a.id==="buffalo") return strategy==="best" ? "tmr" : "hay";
+    if(a.id==="pigs") return "pigmix";
+    if(a.id==="sheep"||a.id==="goats") return strategy==="best" ? "hay" : "grass";
+    if(a.id==="chickens") return "grain";
+    if(a.id==="horses") return "hay";
+    return null;
+  }
+
+  function buildPlan(){
+    const a=D.animals.find(x=>x.id===pa.value); const strategy=$("#plannerStrategy").value;
+    const foodId=chooseFoodForAnimal(a,strategy); const f=D.foods.find(x=>x.id===foodId);
+    let extra="";
+    if(a.id==="horses") extra=`<div class="panel" style="margin-top:10px"><b>+ Ovăz:</b> cultivă ovăz cu semănătoare și combină; pentru cai urmărește și antrenarea/îngrijirea.</div>`;
+    $("#planResult").innerHTML=`
+      <h3>${a.emoji} Plan pentru ${a.name}</h3>
+      <p><b>Țintă:</b> ${strategy==="best"?"productivitate maximă":"setup simplu pentru început"}<br><b>Hrana aleasă:</b> ${f?f.name:a.starter}</p>
+      ${f?`<h4>Ce faci</h4>${f.steps.map((s,i)=>`<div class="step"><span class="step-num">${i+1}</span><div>${s}</div></div>`).join("")}
+      <h4>Ce trebuie să cumperi / ai</h4><div class="machine-list">${f.machines.map(m=>`<span class="machine">${m}</span>`).join("")}</div>`:""}
+      ${extra}
+      <div class="panel" style="margin-top:14px"><b>💰 Eficiență:</b> ${a.notes}</div>`;
+  }
+
+  const quick={
+    straw:"<b>Paiele:</b> la grâu/orz/ovăz lasă combina să facă brazdă de paie. Apoi treci cu <b>presa de balotat</b> direct peste ele. Windrower-ul doar le adună în rând; nu face baloți.",
+    lime:"<b>Var:</b> dacă harta spune că terenul are nevoie de var, îl poți aplica. După aceea continui cu pregătirea solului / semănatul. Nu trebuie să sapi doar ca să poți da var.",
+    chicken:"<b>Găini:</b> folosește grâu, orz sau sorg. Cel mai sigur: pune cerealele într-o remorcă și descarcă exact în triggerul de hrană al cotețului. Dacă ai un BigBag/palet pe jos, mutarea lui este mai incomodă.",
+    hay:"<b>Fân:</b> cositoare → <b>tedder</b> (obligatoriu ca iarba să devină fân) → opțional windrower → presă de balotat sau remorcă de furaje.",
+    silage:"<b>Siloz simplu:</b> cosește iarba → balotează → înfoliază baloții → lasă-i să fermenteze. Este mai simplu pentru o fermă mică decât bunker-ul.",
+    field:"<b>După recoltare:</b> verifică starea câmpului. Var dacă cere → arat doar dacă cere → cultivat sau semănătoare directă → semănat → cilindru opțional → fertilizare / buruieni."
+  };
+  $$(".quick-card").forEach(b=>b.addEventListener("click",()=>$("#quickAnswer").innerHTML=quick[b.dataset.q]));
+
+  renderAnimals(); renderFoods(); renderCrops(); buildPlan();
+
+  // PWA install
+  let deferredPrompt;
+  const ib=$("#installBtn");
+  window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;ib.hidden=false});
+  ib.addEventListener("click",async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;ib.hidden=true});
+  if("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("./sw.js").catch(()=>{});
+})();
+</script>
+</body>
+</html>
